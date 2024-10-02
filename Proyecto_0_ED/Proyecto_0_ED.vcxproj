@@ -130,6 +130,7 @@
     <ClCompile Include="Proyecto_0_ED.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Area.h" />
     <ClInclude Include="HeapPriorityQueue.h" />
     <ClInclude Include="KVPair.h" />
     <ClInclude Include="LinkedPriorityQueue.h" />
@@ -138,8 +139,10 @@
     <ClInclude Include="Node.h" />
     <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="Queue.h" />
+    <ClInclude Include="Servico.h" />
     <ClInclude Include="Tiquete.h" />
     <ClInclude Include="Usuario.h" />
+    <ClInclude Include="Ventanilla.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
