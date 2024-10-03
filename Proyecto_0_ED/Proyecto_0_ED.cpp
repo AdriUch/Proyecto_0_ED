@@ -405,19 +405,20 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tic
 int main() {
     PriorityQueue<Usuario>* colaUsuarios = new HeapPriorityQueue<Usuario>();
     PriorityQueue<Tiquete>* colaTiquetes = new HeapPriorityQueue<Tiquete>();
-    List<Servicio>* listaServicios = new ArrayList<Servicio>(); // Crear lista de servicios
 
-    // Añadir servicios a la lista (Ejemplo)
-    listaServicios->append(Servicio("Compra de boleto", 1));
-    listaServicios->append(Servicio("Cambio de boleto", 2));
-    listaServicios->append(Servicio("Solicitar información", 3));
-    listaServicios->append(Servicio("Realizar un reclamo", 4));
 
-    menuPrincipal(colaUsuarios, colaTiquetes, listaServicios); // Pasar lista de servicios
+    List<Servicio>* serviciosDisponibles = new ArrayList<Servicio>(5);
+    serviciosDisponibles->append(Servicio("Comprar Boleto", 1));
+    serviciosDisponibles->append(Servicio("Cambiar Boleto", 2));
+    serviciosDisponibles->append(Servicio("Solicitar Información", 3));
+    serviciosDisponibles->append(Servicio("Realizar Reclamo", 4));
+
+    
+    menuPrincipal(colaUsuarios, colaTiquetes, serviciosDisponibles);
 
     delete colaUsuarios;
     delete colaTiquetes;
-    delete listaServicios; // Liberar memoria de la lista de servicios
+    delete serviciosDisponibles; // No olvides liberar la memoria
     return 0;
 }
 
