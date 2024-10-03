@@ -30,7 +30,7 @@ public:
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
     }
 
-    // Método para que la ventanilla atienda un tiquete
+    // atiender un tiquete
     void atenderTiquete(PriorityQueue<Tiquete>& colaPrioridad) {
         if (colaPrioridad.isEmpty()) {
             throw runtime_error("No hay tiquetes en la cola de prioridad.");
@@ -40,9 +40,20 @@ public:
         Tiquete tiqueteAtendido = colaPrioridad.removeMin();
         this->tiqueteActual = tiqueteAtendido.getCode();
 
-        // Hora de atención en UTC
+   
         time_t tiempoActual = time(0);
-        horaAtencion = *gmtime(&tiempoActual); // Usar la hora en UTC
+        tm utcTime;
+        gmtime_s(&utcTime, &tiempoActual);
+
+
+        const int offset_seconds = -6 * 3600; // GMT-6
+        time_t gmt_minus_6 = tiempoActual + offset_seconds;
+
+
+        tm gmtMinus6Time;
+        gmtime_s(&gmtMinus6Time, &gmt_minus_6);
+
+        this->horaAtencion = gmtMinus6Time; // Guardar hora de atención ajustada
 
         // Tiquete atendido
         std::cout << "Tiquete atendido en la " << this->codigoVentanilla << ":\n";
@@ -59,3 +70,4 @@ public:
         return os;
     }
 };
+;
