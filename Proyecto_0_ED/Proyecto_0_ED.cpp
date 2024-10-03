@@ -2,7 +2,7 @@
 #include <string>
 #include <cstdlib>
 #include <time.h>
-#include <conio.h> // Para elección del menú
+#include <conio.h> // Para elecciÃ³n del menÃº
 
 #include "LinkedPriorityQueue.h"
 #include "MinHeap.h"
@@ -22,10 +22,10 @@ using std::to_string;
 
 int numGlobal = 100;
 
-// - - - - -  - - - - - MENÚS - - - - - - - - - -
+// - - - - -  - - - - - MENÃšS - - - - - - - - - -
 
 
-// Función para mostrar un menú
+// FunciÃ³n para mostrar un menÃº
 template <typename E>
 void mostrarMenu(int currentSelection, List<E>* opciones, int size) {
 	for (int i = 0; i < size; i++) {
@@ -39,14 +39,14 @@ void mostrarMenu(int currentSelection, List<E>* opciones, int size) {
 	}
 }
 
-// - - - - - MENÚS TIQUETES - - - - -
+// - - - - - MENÃšS TIQUETES - - - - -
 
-// Sub-menú de Selección de Usuario. Menú de selección de un servicio
+// Sub-menÃº de SelecciÃ³n de Usuario. MenÃº de selecciÃ³n de un servicio
 //Servicio selectionService() {
 
 //}
 
-// Sub-menú de Tiquete. Menú de selección de Usuario y creación de Tiquete
+// Sub-menÃº de Tiquete. MenÃº de selecciÃ³n de Usuario y creaciÃ³n de Tiquete
 bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList) {
 	List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
 	int prioridadUser = 0;
@@ -118,7 +118,7 @@ bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>*
 	return false;
 }
 
-//Sub-menú del principal. Para pedir la creación de un tiquete.
+//Sub-menÃº del principal. Para pedir la creaciÃ³n de un tiquete.
 bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList) {
 	const int menuSize = 2;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -165,9 +165,9 @@ bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tick
 	delete listMenu;
 }
 
-// - - - - - MENÚS ADMINISTRACIÓN - - - - -
+// - - - - - MENÃšS ADMINISTRACIÃ“N - - - - -
 
-// Sub-menú de Admin. Realiza las operaciones de los usuarios.
+// Sub-menÃº de Admin. Realiza las operaciones de los usuarios.
 bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 	const int menuSize = 3;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -238,7 +238,7 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 	delete listMenu;
 }
 
-//Sub-menú del principal. Se encarga de dar opciones para listas o colas de usuarios, áres y servicios
+//Sub-menÃº del principal. Se encarga de dar opciones para listas o colas de usuarios, Ã¡res y servicios
 bool menuAdmin(PriorityQueue<Usuario>* userList) {
 	const int menuSize = 4;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -295,7 +295,7 @@ bool menuAdmin(PriorityQueue<Usuario>* userList) {
 
 
 
-// - - - - - MENÚ PRINCIPAL - - - - -
+// - - - - - MENÃš PRINCIPAL - - - - -
 void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList) {
 	const int menuSize = 6;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -370,3 +370,4 @@ int main() {
 	delete colaTiquetes;
 	return 0;
 }
+
