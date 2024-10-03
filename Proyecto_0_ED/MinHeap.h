@@ -52,6 +52,19 @@ private:
 		return rightChild(pos);
 	}
 
+	void expand() {
+		E* temp;
+		temp = new E[max * 2];
+
+		for (int i = 0; i < size; i++) {
+			temp[i] = elements[i];
+		}
+
+		delete[] elements;
+		elements = temp;
+		max = max * 2;
+	}
+
 public:
 	MinHeap(int max = DEFAULT_MAX) {
 		if (max < 1)
@@ -64,8 +77,10 @@ public:
 		delete[] elements;
 	}
 	void insert(E element) {
-		if (size == max)
-			throw runtime_error("Heap is full.");
+		if (size == max) {
+			expand();
+		}
+
 		elements[size] = element;
 		size++;
 		siftUp(size - 1);

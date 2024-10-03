@@ -7,8 +7,11 @@
 #include "LinkedPriorityQueue.h"
 #include "MinHeap.h"
 #include "HeapPriorityQueue.h"
+#include "ArrayList.h"
 #include "Usuario.h"
+#include "Servicio.h"
 #include "Tiquete.h"
+
 
 using std::cout;
 using std::cin;
@@ -17,33 +20,49 @@ using std::string;
 using std::getline;
 using std::to_string;
 
+int numGlobal = 100;
+
 // - - - - -  - - - - - MENÚS - - - - - - - - - -
 
 
 // Función para mostrar un menú
-void mostrarMenu(int currentSelection, const string opciones[], int size) {
-	system("cls");
-
-	for (int i = 0; i < size; ++i) {
+template <typename E>
+void mostrarMenu(int currentSelection, List<E>* opciones, int size) {
+	for (int i = 0; i < size; i++) {
+		opciones->goToPos(i);
 		if (i == currentSelection) {
-			cout << " > " << opciones[i] << endl;
+			cout << " > " << opciones->getElement() << endl;
 		}
 		else {
-			cout << "   " << opciones[i] << endl;
+			cout << "   " << opciones->getElement() << endl;
 		}
 	}
 }
 
 // - - - - - MENÚS TIQUETES - - - - -
 
-//Sub-menú del principal. Genera un tiquete
-bool menuTiquetes() {
-	const int menuSize = 2;
-	string opciones[menuSize] = { "Tipo de Usuario", "Regresar" };
-	int currentSelection = 0;
+// Sub-menú de Selección de Usuario. Menú de selección de un servicio
+//Servicio selectionService() {
 
-	while (true) {
-		mostrarMenu(currentSelection, opciones, menuSize);
+//}
+
+// Sub-menú de Tiquete. Menú de selección de Usuario y creación de Tiquete
+bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList) {
+	List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
+	int prioridadUser = 0;
+
+	cout << "Seleccione el tipo de usuario que es: " << endl;
+
+	while (!userList->isEmpty()) {
+		arrayListUsers->append(userList->removeMin());
+	}
+	int menuSize = arrayListUsers->getSize();
+	int currentSelection = 0;
+	bool repeatMenu = true;
+	while (repeatMenu) {
+		system("cls");
+		cout << "* * * Tipos de Usuarios * * *" << endl;
+		mostrarMenu(currentSelection, arrayListUsers, menuSize);
 
 		int key = _getch();
 		if (key == 224) {
@@ -63,9 +82,79 @@ bool menuTiquetes() {
 		}
 		else if (key == 13) {
 			system("cls");
-			
-			if (opciones[currentSelection] == "Tipo de Usuario") {
-				cout << "estoy aqui, wooo" << endl;
+
+			if (currentSelection < menuSize) {
+				arrayListUsers->goToPos(currentSelection);
+				prioridadUser = arrayListUsers->getElement().prioridadUser;
+				
+				int prioridadServicio = 2;
+				string areaCode = "AC";
+				string stringNumGlobal = std::to_string(numGlobal);
+				numGlobal = numGlobal + 1;
+				
+				Tiquete ticket(prioridadUser, prioridadServicio, areaCode, stringNumGlobal);
+				ticketList->insert(ticket, ticket.getFinalPriority());
+				//selectionService();
+
+				cout << endl << "* Accion realizada con exito *" << endl << endl;
+				cout << "Informacion del tiquete creado: " << endl;
+				cout << "Codigo: " << ticket.getCode() << endl;
+				cout << "Hora de creacion:";
+				ticket.getTime();
+				cout << "Prioridad: " << ticket.getFinalPriority() << endl;
+				system("pause");
+			}
+			repeatMenu = false;
+		}
+	}
+
+	while (!arrayListUsers->isEmpty()) {
+		Usuario user = arrayListUsers->remove();
+		userList->insert(user, user.getPriority());
+	}
+
+	delete arrayListUsers;
+
+	return false;
+}
+
+//Sub-menú del principal. Para pedir la creación de un tiquete.
+bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList) {
+	const int menuSize = 2;
+	List<string>* listMenu = new ArrayList<string>(menuSize);
+	listMenu->append("Creacion de Tiquete");
+	listMenu->append("Regresar");
+	int currentSelection = 0;
+
+	while (true) {
+		system("cls");
+		cout << "* * * Menu de Tiquetes * * *" << endl;
+		mostrarMenu(currentSelection, listMenu, menuSize);
+
+		int key = _getch();
+		if (key == 224) {
+			key = _getch();
+			switch (key) {
+			case 72:
+				if (currentSelection > 0) {
+					currentSelection--;
+				}
+				break;
+			case 80:
+				if (currentSelection < menuSize - 1) {
+					currentSelection++;
+				}
+				break;
+			}
+		}
+		else if (key == 13) {
+			system("cls");
+			listMenu->goToPos(currentSelection);
+			if (listMenu->getElement() == "Creacion de Tiquete") {
+				bool creacionTiquete = selectionElements(userList, ticketList);
+				if (!creacionTiquete) {
+					continue;
+				}
 			}
 			if (currentSelection == menuSize - 1) {
 				return false;
@@ -73,6 +162,7 @@ bool menuTiquetes() {
 			system("pause");
 		}
 	}
+	delete listMenu;
 }
 
 // - - - - - MENÚS ADMINISTRACIÓN - - - - -
@@ -80,11 +170,16 @@ bool menuTiquetes() {
 // Sub-menú de Admin. Realiza las operaciones de los usuarios.
 bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 	const int menuSize = 3;
-	string opciones[menuSize] = { "Agregar", "Eliminar", "Regresar" };
+	List<string>* listMenu = new ArrayList<string>(menuSize);
+	listMenu->append("Agregar");
+	listMenu->append("Eliminar");
+	listMenu->append("Regresar");
 	int currentSelection = 0;
 
 	while (true) {
-		mostrarMenu(currentSelection, opciones, menuSize);
+		system("cls");
+		cout << "* * * Menu de Usuarios * * *" << endl;
+		mostrarMenu(currentSelection, listMenu, menuSize);
 
 		int key = _getch();
 		if (key == 224) {
@@ -104,8 +199,8 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 		}
 		else if (key == 13) {
 			system("cls");
-
-			if (opciones[currentSelection] == "Agregar") {
+			listMenu->goToPos(currentSelection);
+			if (listMenu->getElement() == "Agregar") {
 				string userName;
 				int userPriority;
 				cout << "Ingrese el nombre de usuario que desea agregar: ";
@@ -129,11 +224,9 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 				Usuario user(userPriority, userName);
 				userList->insert(user, user.getPriority());
 
-				userList->print();
-
 				cout << endl << "* Accion realizada con exito *" << endl;
 			}
-			if (opciones[currentSelection] == "Eliminar") {
+			if (listMenu->getElement() == "Eliminar") {
 				cout << "estoy aqui, wooo" << endl;
 			}
 			if (currentSelection == menuSize - 1) {
@@ -142,16 +235,23 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 			system("pause");
 		}
 	}
+	delete listMenu;
 }
 
 //Sub-menú del principal. Se encarga de dar opciones para listas o colas de usuarios, áres y servicios
 bool menuAdmin(PriorityQueue<Usuario>* userList) {
 	const int menuSize = 4;
-	string opciones[menuSize] = { "Tipo de Usuario", "Areas", "Servicios disponibles", "Regresar"};
+	List<string>* listMenu = new ArrayList<string>(menuSize);
+	listMenu->append("Tipo de Usuario");
+	listMenu->append("Areas");
+	listMenu->append("Servicios disponibles");
+	listMenu->append("Regresar");
 	int currentSelection = 0;
 
 	while (true) {
-		mostrarMenu(currentSelection, opciones, menuSize);
+		system("cls");
+		cout << "* * * Menu de Administracion * * *" << endl;
+		mostrarMenu(currentSelection, listMenu, menuSize);
 
 		int key = _getch();
 		if (key == 224) {
@@ -171,17 +271,17 @@ bool menuAdmin(PriorityQueue<Usuario>* userList) {
 		}
 		else if (key == 13) {
 			system("cls");
-
-			if (opciones[currentSelection] == "Tipo de Usuario") {
+			listMenu->goToPos(currentSelection);
+			if (listMenu->getElement() == "Tipo de Usuario") {
 				bool tipoUsuariosMenu = menuTipoUsuarios(userList);
 				if (!tipoUsuariosMenu) {
 					continue;
 				}
 			}
-			if (opciones[currentSelection] == "Areas") {
+			if (listMenu->getElement() == "Areas") {
 				cout << "estoy aqui, wooo" << endl;
 			}
-			if (opciones[currentSelection] == "Servicios disponibles") {
+			if (listMenu->getElement() == "Servicios disponibles") {
 				cout << "estoy aqui, wooo" << endl;
 			}
 			if (currentSelection == menuSize - 1) {
@@ -190,18 +290,27 @@ bool menuAdmin(PriorityQueue<Usuario>* userList) {
 			system("pause");
 		}
 	}
+	delete listMenu;
 }
 
 
 
 // - - - - - MENÚ PRINCIPAL - - - - -
-void menuPrincipal(PriorityQueue<Usuario>* userList) {
+void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList) {
 	const int menuSize = 6;
-	string opciones[menuSize] = { "Estado de las colas", "Tiquetes", "Atender", "Administracion", "Estadisticas del sistema", "Exit"};
+	List<string>* listMenu = new ArrayList<string>(menuSize);
+	listMenu->append("Estado de las colas");
+	listMenu->append("Tiquetes");
+	listMenu->append("Atender");
+	listMenu->append("Administracion");
+	listMenu->append("Estadisticas del sistema");
+	listMenu->append("Salir");
 	int currentSelection = 0;
 
 	while (true) {
-		mostrarMenu(currentSelection, opciones, menuSize);
+		system("cls");
+		cout << "* * * Menu Principal * * *" << endl;
+		mostrarMenu(currentSelection, listMenu, menuSize);
 
 		int key = _getch();
 		if (key == 224) {
@@ -221,26 +330,26 @@ void menuPrincipal(PriorityQueue<Usuario>* userList) {
 		}
 		else if (key == 13) {
 			system("cls");
-
-			if (opciones[currentSelection] == "Estado de las colas") {
+			listMenu->goToPos(currentSelection);
+			if (listMenu->getElement() == "Estado de las colas") {
 				cout << "estoy aqui, wooo";
 			}
-			if (opciones[currentSelection] == "Tiquetes") {
-				bool tiquetesMenu = menuTiquetes();
+			if (listMenu->getElement() == "Tiquetes") {
+				bool tiquetesMenu = menuTiquetes(userList, ticketList);
 				if (!tiquetesMenu) {
 					continue;
 				}
 			}
-			if (opciones[currentSelection] == "Atender") {
+			if (listMenu->getElement() == "Atender") {
 				cout << "estoy aqui, wooo";
 			}
-			if (opciones[currentSelection] == "Administracion") {
+			if (listMenu->getElement() == "Administracion") {
 				bool adminMenu = menuAdmin(userList);
 				if (!adminMenu) {
 					continue;
 				}
 			}
-			if (opciones[currentSelection] == "Estadisticas del sistema") {
+			if (listMenu->getElement() == "Estadisticas del sistema") {
 				cout << "estoy aqui, wooo";
 			}
 			if (currentSelection == menuSize - 1) {
@@ -249,12 +358,15 @@ void menuPrincipal(PriorityQueue<Usuario>* userList) {
 			system("pause");
 		}
 	}
+	delete listMenu;
 }
 
 int main() {
 	PriorityQueue<Usuario>* colaUsuarios = new HeapPriorityQueue<Usuario>();
-	menuPrincipal(colaUsuarios);
+	PriorityQueue<Tiquete>* colaTiquetes = new HeapPriorityQueue<Tiquete>();
+	menuPrincipal(colaUsuarios, colaTiquetes);
 
 	delete colaUsuarios;
+	delete colaTiquetes;
 	return 0;
 }

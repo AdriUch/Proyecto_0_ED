@@ -18,13 +18,32 @@ public:
 		this->tipoUser = other.tipoUser;
 		this->prioridadUser = other.prioridadUser;
 	}
-	
+	bool operator ==(const Usuario& other) {
+		return this->tipoUser == other.tipoUser && this->prioridadUser == other.prioridadUser;
+	}
+	bool operator !=(const Usuario& other) {
+		return this->tipoUser != other.tipoUser && this->prioridadUser != other.prioridadUser;
+	}
+	bool operator <(const Usuario& other) {
+		return this->tipoUser < other.tipoUser && this->prioridadUser < other.prioridadUser;
+	}
+	bool operator <=(const Usuario& other) {
+		return this->tipoUser <= other.tipoUser && this->prioridadUser <= other.prioridadUser;
+	}
+	bool operator >(const Usuario& other) {
+		return this->tipoUser > other.tipoUser && this->prioridadUser > other.prioridadUser;
+	}
+	bool operator >=(const Usuario& other) {
+		return this->tipoUser >= other.tipoUser && this->prioridadUser >= other.prioridadUser;
+	}
+
+
 	int getPriority() {
 		return prioridadUser;
 	}
 };
 
 ostream& operator <<(ostream& os, const Usuario& userInfo) {
-	os << "(" << userInfo.tipoUser << ")";
+	os << userInfo.tipoUser;
 	return os;
 }

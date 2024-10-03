@@ -29,7 +29,7 @@ public:
 		const int offset_seconds = -6 * 3600;
 		time_t gmt_minus_6 = tiempoActual + offset_seconds;
 
-		std::tm gmtMinus6Time;
+		tm gmtMinus6Time;
 		gmtime_s(&gmtMinus6Time, &gmt_minus_6);
 
 		this->horaCreation = gmtMinus6Time;
@@ -46,6 +46,16 @@ public:
 		this->prioridadFinal = other.prioridadFinal;
 	}
 
+	string getCode() {
+		return code;
+	}
+
+	void getTime(){
+		cout << horaCreation.tm_hour << ":" << (horaCreation.tm_min < 10 ? "0" : "") <<
+			horaCreation.tm_min << ':' << (horaCreation.tm_sec < 10 ? "0" : "") <<
+			horaCreation.tm_sec << endl;
+	}
+
 	int getFinalPriority() {
 		return prioridadFinal;
 	}
@@ -53,7 +63,7 @@ public:
 
 ostream& operator <<(ostream& os, const Tiquete& ticketInfo) {
 	os << "(" << ticketInfo.code << ", " << ticketInfo.horaCreation.tm_hour << ":"
-		<< (ticketInfo.horaCreation.tm_min < 10 ? "0" : "")<< ticketInfo.horaCreation.tm_min<< ':'
+		<< (ticketInfo.horaCreation.tm_min < 10 ? "0" : "") << ticketInfo.horaCreation.tm_min<< ':'
 		<< (ticketInfo.horaCreation.tm_sec < 10 ? "0" : "") << ticketInfo.horaCreation.tm_sec
 		<< ", " << ticketInfo.prioridadFinal << ")";
 	return os;
