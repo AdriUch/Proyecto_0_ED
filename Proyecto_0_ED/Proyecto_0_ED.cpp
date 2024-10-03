@@ -40,82 +40,122 @@ void mostrarMenu(int currentSelection, List<E>* opciones, int size) {
 }
 
 // - - - - - MENÚS TIQUETES - - - - -
+//sub menu de elegri servivicios
 
-// Sub-menú de Selección de Usuario. Menú de selección de un servicio
-//Servicio selectionService() {
+Servicio selectionService(List<Servicio>* serviciosDisponibles) {
+    int menuSize = serviciosDisponibles->getSize();
+    int currentSelection = 0;
 
-//}
+    if (menuSize == 0) {
+        throw runtime_error("No hay servicios disponibles.");
+    }
+
+    while (true) {
+        system("cls");
+        cout << "* * * Selección de Servicio * * *" << endl;
+
+        // Mostrar el menú de servicios
+        mostrarMenu(currentSelection, serviciosDisponibles, menuSize);
+
+        int key = _getch();
+        if (key == 224) {
+            key = _getch();
+            switch (key) {
+            case 72: // Flecha arriba
+                if (currentSelection > 0) {
+                    currentSelection--;
+                }
+                break;
+            case 80: // Flecha abajo
+                if (currentSelection < menuSize - 1) {
+                    currentSelection++;
+                }
+                break;
+            }
+        }
+        else if (key == 13) { 
+            // Seleccionar el servicio
+            serviciosDisponibles->goToPos(currentSelection);
+            Servicio servicioSeleccionado = serviciosDisponibles->getElement();
+            cout << "Servicio seleccionado: " << servicioSeleccionado.getDescripcion() << endl;
+            system("pause");
+            return servicioSeleccionado; // Devuelve el servicio seleccionado
+        }
+    }
+}
 
 // Sub-menú de Tiquete. Menú de selección de Usuario y creación de Tiquete
-bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList) {
-	List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
-	int prioridadUser = 0;
+bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList, List<Servicio>* serviciosDisponibles) {
+    List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
+    int prioridadUser = 0;
 
-	cout << "Seleccione el tipo de usuario que es: " << endl;
+    cout << "Seleccione el tipo de usuario que es: " << endl;
 
-	while (!userList->isEmpty()) {
-		arrayListUsers->append(userList->removeMin());
-	}
-	int menuSize = arrayListUsers->getSize();
-	int currentSelection = 0;
-	bool repeatMenu = true;
-	while (repeatMenu) {
-		system("cls");
-		cout << "* * * Tipos de Usuarios * * *" << endl;
-		mostrarMenu(currentSelection, arrayListUsers, menuSize);
+    while (!userList->isEmpty()) {
+        arrayListUsers->append(userList->removeMin());
+    }
+    int menuSize = arrayListUsers->getSize();
+    int currentSelection = 0;
+    bool repeatMenu = true;
+    while (repeatMenu) {
+        system("cls");
+        cout << "* * * Tipos de Usuarios * * *" << endl;
+        mostrarMenu(currentSelection, arrayListUsers, menuSize);
 
-		int key = _getch();
-		if (key == 224) {
-			key = _getch();
-			switch (key) {
-			case 72:
-				if (currentSelection > 0) {
-					currentSelection--;
-				}
-				break;
-			case 80:
-				if (currentSelection < menuSize - 1) {
-					currentSelection++;
-				}
-				break;
-			}
-		}
-		else if (key == 13) {
-			system("cls");
+        int key = _getch();
+        if (key == 224) {
+            key = _getch();
+            switch (key) {
+            case 72:
+                if (currentSelection > 0) {
+                    currentSelection--;
+                }
+                break;
+            case 80:
+                if (currentSelection < menuSize - 1) {
+                    currentSelection++;
+                }
+                break;
+            }
+        }
+        else if (key == 13) {
+            system("cls");
 
-			if (currentSelection < menuSize) {
-				arrayListUsers->goToPos(currentSelection);
-				prioridadUser = arrayListUsers->getElement().prioridadUser;
-				
-				int prioridadServicio = 2;
-				string areaCode = "AC";
-				string stringNumGlobal = std::to_string(numGlobal);
-				numGlobal = numGlobal + 1;
-				
-				Tiquete ticket(prioridadUser, prioridadServicio, areaCode, stringNumGlobal);
-				ticketList->insert(ticket, ticket.getFinalPriority());
-				//selectionService();
+            if (currentSelection < menuSize) {
+                arrayListUsers->goToPos(currentSelection);
+                prioridadUser = arrayListUsers->getElement().prioridadUser;
 
-				cout << endl << "* Accion realizada con exito *" << endl << endl;
-				cout << "Informacion del tiquete creado: " << endl;
-				cout << "Codigo: " << ticket.getCode() << endl;
-				cout << "Hora de creacion:";
-				ticket.getTime();
-				cout << "Prioridad: " << ticket.getFinalPriority() << endl;
-				system("pause");
-			}
-			repeatMenu = false;
-		}
-	}
+                // Selección de servicio
+                Servicio servicioSeleccionado = selectionService(serviciosDisponibles);
 
-	while (!arrayListUsers->isEmpty()) {
-		Usuario user = arrayListUsers->remove();
-		userList->insert(user, user.getPriority());
-	}
+                int prioridadServicio = 2; // Puedes ajustar esto según el servicio seleccionado
+                string areaCode = "AC";
+                string stringNumGlobal = std::to_string(numGlobal);
+                numGlobal++;
 
-	delete arrayListUsers;
+                Tiquete ticket(prioridadUser, prioridadServicio, areaCode, stringNumGlobal);
+                ticketList->insert(ticket, ticket.getFinalPriority());
 
-	return false;
+                cout << endl << "* Acción realizada con éxito *" << endl << endl;
+                cout << "Información del tiquete creado: " << endl;
+                cout << "Código: " << ticket.getCode() << endl;
+                cout << "Hora de creación:";
+                ticket.getTime();
+                cout << "Prioridad: " << ticket.getFinalPriority() << endl;
+                system("pause");
+            }
+            repeatMenu = false;
+        }
+    }
+
+    while (!arrayListUsers->isEmpty()) {
+        Usuario user = arrayListUsers->remove();
+        userList->insert(user, user.getPriority());
+    }
+
+    delete arrayListUsers;
+
+    return false;
 }
 
 //Sub-menú del principal. Para pedir la creación de un tiquete.
@@ -361,13 +401,24 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tic
 	delete listMenu;
 }
 
-int main() {
-	PriorityQueue<Usuario>* colaUsuarios = new HeapPriorityQueue<Usuario>();
-	PriorityQueue<Tiquete>* colaTiquetes = new HeapPriorityQueue<Tiquete>();
-	menuPrincipal(colaUsuarios, colaTiquetes);
 
-	delete colaUsuarios;
-	delete colaTiquetes;
-	return 0;
+int main() {
+    PriorityQueue<Usuario>* colaUsuarios = new HeapPriorityQueue<Usuario>();
+    PriorityQueue<Tiquete>* colaTiquetes = new HeapPriorityQueue<Tiquete>();
+    List<Servicio>* listaServicios = new ArrayList<Servicio>(); // Crear lista de servicios
+
+    // Añadir servicios a la lista (Ejemplo)
+    listaServicios->append(Servicio("Compra de boleto", 1));
+    listaServicios->append(Servicio("Cambio de boleto", 2));
+    listaServicios->append(Servicio("Solicitar información", 3));
+    listaServicios->append(Servicio("Realizar un reclamo", 4));
+
+    menuPrincipal(colaUsuarios, colaTiquetes, listaServicios); // Pasar lista de servicios
+
+    delete colaUsuarios;
+    delete colaTiquetes;
+    delete listaServicios; // Liberar memoria de la lista de servicios
+    return 0;
 }
+
 
