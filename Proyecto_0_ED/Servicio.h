@@ -6,28 +6,34 @@ using std::ostream;
 using std::string;
 
 class Servicio {
-public:
+private:
     string descripcion;
     int prioridadServicio;
     string areaCode;
 
-    Servicio() {}
-    Servicio(string descripcion, int prioridadServicio, string areaCode) {
-        this->descripcion = descripcion;
-        this->prioridadServicio = prioridadServicio;
-        this->areaCode = areaCode;
-    }
+public:
 
-    void operator =(const Servicio& other) {
-        this->descripcion = other.descripcion;
-        this->prioridadServicio = other.prioridadServicio;
-        this->areaCode = other.areaCode;
+    Servicio() : descripcion(""), prioridadServicio(0), areaCode("") {}
+
+    Servicio(const string& descripcion, int prioridadServicio, const string& areaCode)
+        : descripcion(descripcion), prioridadServicio(prioridadServicio), areaCode(areaCode) {}
+
+
+    string getDescripcion() const { return descripcion; }
+    int getPrioridadServicio() const { return prioridadServicio; }
+    string getAreaCode() const { return areaCode; }
+
+
+    void setDescripcion(const string& desc) { descripcion = desc; }
+    void setPrioridadServicio(int prioridad) { prioridadServicio = prioridad; }
+    void setAreaCode(const string& area) { areaCode = area; }
+
+  
+    friend ostream& operator<<(ostream& os, const Servicio& servicioInfo) {
+        os << "Servicio: " << servicioInfo.descripcion 
+           << " | Prioridad: " << servicioInfo.prioridadServicio 
+           << " | Área: " << servicioInfo.areaCode;
+        return os;
     }
 };
 
-ostream& operator <<(ostream& os, const Servicio& servicioInfo) {
-    os << "Servicio: " << servicioInfo.descripcion 
-       << " | Prioridad: " << servicioInfo.prioridadServicio 
-       << " | Área: " << servicioInfo.areaCode;
-    return os;
-}
