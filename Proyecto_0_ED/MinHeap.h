@@ -1,3 +1,19 @@
+/*
+			Archivo: Clase MinHeap
+			Hecha en clase
+
+			Descripción general: Una clase que contiene los atributos necesarios
+			para poder crear un objeto llamado MinHeap que tiene forma de un árbol
+			y organiza elementos de forma que siempre va a salir el que tiene
+			menor prioridad.
+
+			Modificación hecha por: Carmen Hidalgo Paz
+
+			Descripción: Se agregó el método privado expand() para expandir el
+			arreglo cuando se desea insertar un elemento y el arreglo está lleno.
+*/
+
+
 #pragma once
 #define DEFAULT_MAX 1024
 

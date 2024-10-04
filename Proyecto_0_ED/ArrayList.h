@@ -1,3 +1,21 @@
+/*
+			Archivo: Clase List
+			Hecha en clase
+
+			Descripción general: Hereda de la clase List. Se implementan los
+			métodos para el manejo de los elementos dentro de la lista.
+
+			Modificación hecha por: Carmen Hidalgo Paz
+
+			Descripción: Se agregó el método privado expand() para expandir el
+			arreglo cuando se desea insertar un elemento y el arreglo está lleno.
+			Asimismo, se implementaron las funciones indexOf() y contains() para
+			encontrar la posición de un elemento en la lista y si el elemento está
+			en la lista, respectivamente.
+*/
+
+
+
 #pragma once
 
 #include <stdexcept>

@@ -1,3 +1,13 @@
+/*
+			Archivo: Clase HeapPriorityQueue
+			Hecha en clase
+
+			Descripción general: Hereda de la clase PriorityQueue. Se implementan
+			los métodos para el manejo de los elementos, que en este caso son los
+			objetos KVPair, dentro de la cola de prioridad.
+*/
+
+
 #pragma once
 
 #include <stdexcept>

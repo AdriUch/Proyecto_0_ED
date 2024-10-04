@@ -1,3 +1,11 @@
+/*
+			Archivo: Clase PriorityQueue
+			Hecha en clase
+
+			Descripción general: Una clase abstracta que contiene los
+			métodos que se deberán implementar en las clases que la hereden.
+*/
+
 #pragma once
 
 template <typename E>

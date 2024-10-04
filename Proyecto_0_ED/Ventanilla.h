@@ -1,3 +1,11 @@
+/*
+            Archivo: Clase Ventanilla
+            Hecho por:
+
+            Descripción general:
+*/
+
+
 #pragma once
 #include <iostream>
 #include <string>

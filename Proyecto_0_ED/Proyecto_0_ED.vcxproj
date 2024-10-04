@@ -134,13 +134,9 @@
     <ClInclude Include="ArrayList.h" />
     <ClInclude Include="HeapPriorityQueue.h" />
     <ClInclude Include="KVPair.h" />
-    <ClInclude Include="LinkedPriorityQueue.h" />
-    <ClInclude Include="LinkedQueue.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="MinHeap.h" />
-    <ClInclude Include="Node.h" />
     <ClInclude Include="PriorityQueue.h" />
-    <ClInclude Include="Queue.h" />
     <ClInclude Include="Servicio.h" />
     <ClInclude Include="Tiquete.h" />
     <ClInclude Include="Usuario.h" />

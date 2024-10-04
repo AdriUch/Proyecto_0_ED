@@ -1,8 +1,15 @@
+/*
+            Archivo: Clase Área
+            Hecho por:
+
+            Descripción general:
+*/
+
 #pragma once
 #include <string>
 #include <iostream>
 #include <memory> // Para punteros inteligentes
-#include "LinkedQueue.h"
+//#include "LinkedQueue.h"
 #include "Tiquete.h"
 //#include "Ventanilla.h"
 
@@ -15,7 +22,7 @@ private:
     string tituloArea;
     string codigo;
     int cantidadVentanillas;
-    unique_ptr<LinkedQueue<Tiquete>> listaTiquetes;  // Atributo de tipo puntero inteligente
+    //unique_ptr<LinkedQueue<Tiquete>> listaTiquetes;  // Atributo de tipo puntero inteligente
    // unique_ptr<LinkedQueue<Ventanilla>> listaVentanillas;  // Atributo de tipo puntero inteligente
 
 
@@ -24,8 +31,8 @@ public:
     Area(){}
 
     // Constructor con lista de inicialización
-    Area(const string& titulo, const string& codigo, int cantidadVentanillas, const LinkedQueue<Tiquete>& listaTiquetes)
-        : tituloArea(titulo), codigo(codigo), cantidadVentanillas(cantidadVentanillas), listaTiquetes(make_unique<LinkedQueue<Tiquete>>(listaTiquetes)/*, listaVentanillas(make_unique<LinkedQueue<Ventanilla>>(listaVentanillas)*/) {}
+    Area(const string& titulo, const string& codigo, int cantidadVentanillas /*const LinkedQueue<Tiquete>& listaTiquetes*/)
+        : tituloArea(titulo), codigo(codigo), cantidadVentanillas(cantidadVentanillas) /*listaTiquetes(make_unique<LinkedQueue<Tiquete>>(listaTiquetes)/*, listaVentanillas(make_unique<LinkedQueue<Ventanilla>>(listaVentanillas)*/) {}
 
     // Operador de asignación
     Area& operator=(const Area& other) {
@@ -33,7 +40,7 @@ public:
             tituloArea = other.tituloArea;
             codigo = other.codigo;
             cantidadVentanillas = other.cantidadVentanillas;
-            listaTiquetes = make_unique<LinkedQueue<Tiquete>>(*other.listaTiquetes);
+            //listaTiquetes = make_unique<LinkedQueue<Tiquete>>(*other.listaTiquetes);
           //  listaVentanilla = make_unique<LinkedQueue<Ventanilla>>(*other.listaVentanillas);
         }
         return *this; // Devuelve la referencia al objeto actual
@@ -44,7 +51,7 @@ public:
         this->tituloArea = titulo;
         this->codigo = codigo;
         this->cantidadVentanillas = cantidadVentanillas;
-        this->listaTiquetes = make_unique<LinkedQueue<Tiquete>>(nuevaListaTiquetes);
+        //this->listaTiquetes = make_unique<LinkedQueue<Tiquete>>(nuevaListaTiquetes);
         //this->listaVentanillas= make_unique<LinkedQueue<Ventanilla>>(nuevaListaVentanillas);
     }
 
@@ -70,6 +77,6 @@ public:
     string getTituloArea() const { return tituloArea; }
     string getCodigo() const { return codigo; }
     int getCantidadVentanillas() const { return cantidadVentanillas; }
-    LinkedQueue<Tiquete>& getListaTiquetes() const { return *listaTiquetes; }
+    /*LinkedQueue<Tiquete>& getListaTiquetes() const { return *listaTiquetes; }*/
     //    LinkedQueue<Ventanilla>& getListaVentanillas() const { return *listaVentanillas; }
 };

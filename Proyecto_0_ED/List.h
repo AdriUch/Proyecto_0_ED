@@ -1,3 +1,17 @@
+/*
+			Archivo: Clase List
+			Hecha en clase
+
+			Descripción general: Una clase abstracta que contiene los
+			métodos que se deberán implementar en las clases que la hereden.
+
+			Modificación hecha por: Carmen Hidalgo Paz
+
+			Descripción: Se agregaron los métodos indexOf() y contains(), que se
+			implementarán en las clases que heredan a ésta.
+*/
+
+
 #pragma once
 
 template <typename E>

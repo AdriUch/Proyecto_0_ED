@@ -1,3 +1,14 @@
+/*
+			Archivo: Clase Tiquete
+			Hecho por: Carmen Hidalgo Paz
+
+			Descripción general: Una clase que contiene los atributos necesarios
+			para poder crear un objeto llamado Tiquete que después se guardará
+			en una cola de prioridad. Se detalla el funcionamiento de
+			la asignación, las comparaciones entre objetos y la impresión.
+*/
+
+
 #pragma once
 #include <iostream>
 #include <ctime>
@@ -22,6 +33,8 @@ public:
 	Tiquete(int prioridadUser, int prioridadServicio, string areaCode, string numGlobal) {
 		this->areaCode = areaCode; 
 		this->code = this->areaCode + numGlobal;
+		// Se obtiene el tiempo actual y se convierte a una hora más entendible
+		// para el lector
 		time_t tiempoActual = time(0);
 		tm utcTime;
 		gmtime_s(&utcTime, &tiempoActual);
