@@ -131,10 +131,136 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 		}
 	}
 }
+// Sub-menú de Admin. Realiza las operaciones de las áreas
+bool menuAreas(ArrayList<Area>& areas) {
+	int totalArea = areas.getSize();
+	const int menuSize = 4;
+	List<string>* listMenu = new ArrayList<string>(menuSize);
+	listMenu->append("Agregar");
+	listMenu->append("Modificar cantidad de ventanillas");
+	listMenu->append("Eliminar");
+	listMenu->append("Regresar");
+	int currentSelection = 0;
 
-/*Area selectionArea() {
+	while (true) {
+		system("cls");
+		cout << "* * * Menu de Areas * * *" << endl;
+		mostrarMenu(currentSelection, listMenu, menuSize);
 
-}*/
+		//Manejo de las teclas de selección
+		int key = _getch();
+		if (key == 224) {
+			key = _getch();
+			switch (key) {
+			case 72:
+				if (currentSelection > 0) {
+					currentSelection--;
+				}
+				break;
+			case 80:
+				if (currentSelection < menuSize - 1) {
+					currentSelection++;
+				}
+				break;
+			}
+		}
+		else if (key == 13) {  // Enter key
+			system("cls");
+			listMenu->goToPos(currentSelection);
+			if (listMenu->getElement() == "Agregar") {
+				string titulo, codigo;
+				int cantidadVentanillas;
+
+				cout << "Ingrese el titulo del area: ";
+				getline(cin, titulo);
+				cout << "Ingrese el codigo del area: ";
+				getline(cin, codigo);
+				cout << "Ingrese la cantidad de ventanillas: ";
+				cin >> cantidadVentanillas;
+
+				// Crear una nueva área usando el constructor adecuado
+				Area nuevaArea(titulo, codigo, cantidadVentanillas, 5, 5); 
+				areas.append(nuevaArea);
+
+				cout << "* Area agregada con exito *" << endl;
+			}
+			//Modifica algún área ya existente
+			else if (listMenu->getElement() == "Modificar cantidad de ventanillas") {
+				int areaIndex;
+				cout << "Ingrese el indice del area a modificar: ";
+				cin >> areaIndex;
+
+				//Cambia la cantidad de ventanillas
+				if (areaIndex >= 0 && areaIndex < areas.getSize()) {
+					int nuevaCantidad;
+					cout << "Cantidad actual: " << areas.getElement().getCantidadVentanillas() << endl;
+					cout << "Ingrese la nueva cantidad: ";
+					cin >> nuevaCantidad;
+					areas.getElement().modificarVentanillas(nuevaCantidad);
+					cout << "* Cantidad de ventanillas modificada con exito *" << endl;
+				}
+				else {
+					cout << "Indice no valido." << endl;
+				}
+			}
+			//Eliminar el área seleccionada
+			else if (listMenu->getElement() == "Eliminar") {
+				int areaIndex;
+				cout << "Ingrese el indice del area a eliminar: ";
+				cin >> areaIndex;
+
+				if (areaIndex >= 0 && areaIndex < areas.getSize()) {
+					string confirm;
+					cout << "Seguro que desea eliminar esta area? (s/n): ";
+					cin >> confirm;
+					if (confirm == "s" || confirm == "S") {
+						Area::eliminarArea(areas.getArray(), totalArea, areaIndex);
+						cout << "* Area eliminada con exito *" << endl;
+					}
+				}
+				else {
+					cout << "Indice no valido." << endl;
+				}
+			}
+			if (currentSelection == menuSize - 1) {
+				return false;
+			}
+			system("pause");
+		}
+	}
+	delete listMenu;
+}
+
+// Función para seleccionar un área desde la lista de áreas disponibles
+Area selectionArea(ArrayList<Area>& areas) {
+	// Verificar si hay áreas disponibles
+	if (areas.getSize() == 0) {
+		cout << "No hay áreas disponibles para seleccionar." << endl;
+		throw std::runtime_error("No hay áreas disponibles.");
+	}
+
+	// Mostrar la lista de áreas con su índice
+	cout << "Seleccione el área que desea:" << endl;
+	for (int i = 0; i < areas.getSize(); ++i) { 
+		cout << i << ". " << areas.getTheElement(i).getTituloArea() << " (Código: " << areas.getTheElement(i).getCodigo() << ")" << endl;
+	}
+
+	// Obtener la selección del usuario
+	int seleccion;
+	cout << "Ingrese el número del área que desea seleccionar: ";
+	cin >> seleccion;
+
+	// Validar que la selección esté dentro del rango válido
+	if (seleccion < 0 || seleccion >= areas.getSize()) {
+		cout << "Selección no válida." << endl;
+		throw std::out_of_range("Selección fuera de rango.");
+	}
+
+	// Retornar el área seleccionada
+	return areas.getTheElement(seleccion);
+}
+
+
 
 bool menuServicios(List<Servicio>* serviceList) {
 	// Opciones del menú
@@ -579,5 +705,3 @@ int main() {
     delete listaServicios;
     return 0;
 }
-
-

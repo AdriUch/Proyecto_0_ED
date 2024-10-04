@@ -22,6 +22,7 @@
 #include <iostream>
 #include "List.h"
 
+
 using std::runtime_error;
 using std::cout;
 using std::endl;
@@ -61,6 +62,24 @@ public:
 	~ArrayList() {
 		delete[] elements;
 	}
+
+	// Método para obtener el arreglo interno de las listas
+	E* getArray() const {
+		return elements;
+	}
+
+	// Constructor de copia. Apoya los "other" de la función del operador de asignación
+	ArrayList(const ArrayList<E>& other) {
+		max = other.max;
+		size = other.size;
+		pos = other.pos;
+		elements = new E[max];
+
+		for (int i = 0; i < size; i++) {
+			elements[i] = other.elements[i];
+		}
+	}
+
 	// Inserta un elemento nuevo en la posición actual
 	void insert(E element) {
 		if (size == max) {
@@ -112,6 +131,18 @@ public:
 
 		return elements[pos];
 	}
+	// Retorna el valor del elemento encontrado en la posición especificada
+	E getTheElement(int element) const {
+		if (size == 0) {
+			throw runtime_error("List is empty.");
+		}
+		if (element < 0 || element >= size) {
+			throw runtime_error("Index out of range.");
+		}
+
+		return elements[element];
+	}
+
 	// Elimina todos los elementos de la lista y la deja vacía
 	void clear() {
 		size = pos = 0;

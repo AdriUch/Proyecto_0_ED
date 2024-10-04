@@ -25,7 +25,6 @@ public:
 	string areaCode;
 	string code;
 	tm horaCreation;
-	time_t segundos;
 	int prioridadUser;
 	int prioridadServicio;
 	int prioridadFinal;
@@ -46,7 +45,6 @@ public:
 		tm gmtMinus6Time;
 		gmtime_s(&gmtMinus6Time, &gmt_minus_6);
 
-		this->segundos = tiempoActual;
 		this->horaCreation = gmtMinus6Time;
 		this->prioridadUser = prioridadUser;
 		this->prioridadServicio = prioridadServicio;
@@ -55,7 +53,6 @@ public:
 	void operator =(const Tiquete& other) {
 		this->areaCode = other.areaCode;
 		this->code = other.code;
-		this->segundos = other.segundos;
 		this->horaCreation = other.horaCreation;
 		this->prioridadUser = other.prioridadUser;
 		this->prioridadServicio = other.prioridadServicio;
@@ -65,9 +62,7 @@ public:
 	string getCode() {
 		return code;
 	}
-	time_t getSeconds() {
-		return segundos;
-	}
+
 	void getTime(){
 		cout << horaCreation.tm_hour << ":" << (horaCreation.tm_min < 10 ? "0" : "") <<
 			horaCreation.tm_min << ':' << (horaCreation.tm_sec < 10 ? "0" : "") <<

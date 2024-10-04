@@ -1,83 +1,113 @@
 /*
             Archivo: Clase Área
-            Hecho por:
+            Hecho por: Adrián Ugalde
 
-            Descripción general:
+            Descripción general:Clase que contiene los atributos necesarios
+			para crear un objeto llamado Area para después guardarlo
+			en una lista. Se detalla el funcionamiento de
+			la asignación, las comparaciones entre objetos y la impresión.
+
 */
 
 #pragma once
 #include <string>
 #include <iostream>
-#include <memory> // Para punteros inteligentes
-//#include "LinkedQueue.h"
+#include "ArrayList.h"
 #include "Tiquete.h"
-//#include "Ventanilla.h"
+#include "Ventanilla.h"
 
 using std::ostream;
 using std::string;
-using std::unique_ptr;
-using std::make_unique;
+
 class Area {
 private:
     string tituloArea;
     string codigo;
     int cantidadVentanillas;
-    //unique_ptr<LinkedQueue<Tiquete>> listaTiquetes;  // Atributo de tipo puntero inteligente
-   // unique_ptr<LinkedQueue<Ventanilla>> listaVentanillas;  // Atributo de tipo puntero inteligente
-
+    ArrayList<Tiquete>* listaTiquetes;      // Lista de tiquetes
+    ArrayList<Ventanilla>* listaVentanillas;  // Lista de ventanillas
 
 public:
-    // Constructor por defecto
-    Area(){}
+    // Constructor base
+    Area()
+        : tituloArea(""), codigo(""), cantidadVentanillas(0),
+        listaTiquetes(new ArrayList<Tiquete>()),
+        listaVentanillas(new ArrayList<Ventanilla>()) {}
 
-    // Constructor con lista de inicialización
-    Area(const string& titulo, const string& codigo, int cantidadVentanillas /*const LinkedQueue<Tiquete>& listaTiquetes*/)
-        : tituloArea(titulo), codigo(codigo), 
-        cantidadVentanillas(cantidadVentanillas) /*listaTiquetes(make_unique<LinkedQueue<Tiquete>>(listaTiquetes), listaVentanillas(make_unique<LinkedQueue<Ventanilla>>(listaVentanillas))*/ {}
+    // Constructor con parámetros
+    Area(const string& titulo, const string& codigo, int cantidadVentanillas, int maxTiquetes, int maxVentanillas)
+        : tituloArea(titulo), codigo(codigo), cantidadVentanillas(cantidadVentanillas) {
+        listaTiquetes = new ArrayList<Tiquete>(maxTiquetes);          // Usar ArrayList para lista de tiquetes
+        listaVentanillas = new ArrayList<Ventanilla>(maxVentanillas);  // Usar ArrayList para lista de ventanillas
+    }
 
-    // Operador de asignación
+    // Destructor
+    ~Area() {
+        delete listaTiquetes;
+        delete listaVentanillas;
+    }
+
+    // Operador de asignación. Evita problemas con los "=" de ciertas funciones
     Area& operator=(const Area& other) {
-        if (this != &other) { // Evitar la autoasignación
+        if (this != &other) {
             tituloArea = other.tituloArea;
             codigo = other.codigo;
             cantidadVentanillas = other.cantidadVentanillas;
-            //listaTiquetes = make_unique<LinkedQueue<Tiquete>>(*other.listaTiquetes);
-           // listaVentanilla = make_unique<LinkedQueue<Ventanilla>>(*other.listaVentanillas);
+
+            // Limpiar listas actuales
+            delete listaTiquetes;
+            delete listaVentanillas;
+
+            // Copiar nuevas listas
+            listaTiquetes = new ArrayList<Tiquete>(*other.listaTiquetes);
+            listaVentanillas = new ArrayList<Ventanilla>(*other.listaVentanillas);
         }
-        return *this; // Devuelve la referencia al objeto actual
+        return *this;
     }
 
     // Método para agregar o modificar un área
-    void agregarArea(const string& titulo, const string& codigo, int cantidadVentanillas /*const LinkedQueue<Tiquete>& nuevaListaTiquetes, const LinkedQueue<Ventanilla>& nuevaListaVentanillas*/) {
+    void agregarArea(const string& titulo, const string& codigo, int cantidadVentanillas, int maxTiquetes, int maxVentanillas) {
         this->tituloArea = titulo;
         this->codigo = codigo;
         this->cantidadVentanillas = cantidadVentanillas;
-        //this->listaTiquetes = make_unique<LinkedQueue<Tiquete>>(nuevaListaTiquetes);
-        //this->listaVentanillas= make_unique<LinkedQueue<Ventanilla>>(nuevaListaVentanillas);
+
+        // Eliminar listas actuales y crear nuevas
+        delete listaTiquetes;
+        listaTiquetes = new ArrayList<Tiquete>(maxTiquetes);
+
+        delete listaVentanillas;
+        listaVentanillas = new ArrayList<Ventanilla>(maxVentanillas);
     }
 
     // Método para modificar la cantidad de ventanillas
     void modificarVentanillas(int nuevaCantidad) {
-        this->cantidadVentanillas = nuevaCantidad; // Cambia la cantidad de ventanillas
+        this->cantidadVentanillas = nuevaCantidad;
     }
 
-    // Método para eliminar un área (a través de un arreglo de áreas)
+    // Método estático para eliminar un área de un arreglo de áreas
     static void eliminarArea(Area* areas, int& totalAreas, int posicionArea) {
         if (posicionArea < 0 || posicionArea >= totalAreas) {
-            throw std::out_of_range("Posición fuera de rango."); // Manejo de errores
+            throw std::out_of_range("Posición fuera de rango.");
         }
-
-        // Mueve las áreas hacia adelante para llenar el vacío
         for (int i = posicionArea; i < totalAreas - 1; ++i) {
             areas[i] = areas[i + 1];
         }
-        totalAreas--; // Disminuye el contador de áreas activas
+        totalAreas--;
     }
 
     // Getters
     string getTituloArea() const { return tituloArea; }
     string getCodigo() const { return codigo; }
     int getCantidadVentanillas() const { return cantidadVentanillas; }
-    /*LinkedQueue<Tiquete>& getListaTiquetes() const { return *listaTiquetes; }*/
-    //    LinkedQueue<Ventanilla>& getListaVentanillas() const { return *listaVentanillas; }
+
+    // Obtiene las referencias a las listas de tiquetes y ventanillas
+    ArrayList<Tiquete>& getListaTiquetes() const { return *listaTiquetes; }
+    ArrayList<Ventanilla>& getListaVentanillas() const { return *listaVentanillas; }
+
+    // Método para mostrar la información del área
+    void mostrarInfoArea() const {
+        std::cout << "Area: " << tituloArea << " | Codigo: " << codigo << " | Ventanillas: " << cantidadVentanillas << std::endl;
+    }
 };
+
+
