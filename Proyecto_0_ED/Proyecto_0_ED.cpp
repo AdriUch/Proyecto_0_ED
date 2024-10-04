@@ -25,6 +25,7 @@
 #include "Usuario.h"
 #include "Servicio.h"
 #include "Tiquete.h"
+#include "Area.h"
 
 
 using std::cout;
@@ -131,19 +132,104 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 	}
 }
 
+/*Area selectionArea() {
+
+}*/
+
 bool menuServicios(List<Servicio>* serviceList) {
-	return 0;
+	// Opciones del menú
+	const int menuSize = 4;
+	List<string>* listMenu = new ArrayList<string>(menuSize);
+	listMenu->append("Agregar");
+	listMenu->append("Eliminar");
+	listMenu->append("Reordenar");
+	listMenu->append("Regresar");
+	int currentSelection = 0;
+
+	// Manejo de teclas presionadas en el menú
+	while (true) {
+		system("cls");
+		// Se muestran las opciones del menú
+		cout << "* * * Menu de Servicios * * *" << endl;
+		mostrarMenu(currentSelection, listMenu, menuSize);
+
+		int key = _getch();
+		if (key == 224) {
+			key = _getch();
+			switch (key) {
+			case 72: // Flecha arriba
+				if (currentSelection > 0) {
+					currentSelection--;
+				}
+				break;
+			case 80: // Flecha abajo
+				if (currentSelection < menuSize - 1) {
+					currentSelection++;
+				}
+				break;
+			}
+		}
+		else if (key == 13) { // Enter
+			system("cls");
+			listMenu->goToPos(currentSelection);
+			if (listMenu->getElement() == "Agregar") {
+				// Se pide al usuario un número y un string
+				string serviceName;
+				int servicePriority;
+				cout << "Ingrese el nombre del servicio que desea agregar: ";
+				getline(cin, serviceName);
+
+				while (true) {
+					cout << endl << "Ingrese la prioridad del servicio: ";
+					cin >> servicePriority;
+
+					if (cin.fail()) {
+						cin.clear();
+						cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						cout << "* Por favor, ingrese un numero valido *" << endl;
+					}
+					else {
+						cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						break;
+					}
+				}
+				
+				// Selección de área
+				//Area areaSeleccionada = selectionArea(areaList);
+				
+				// Se crea el objeto Servicio y se agrega a la lista
+				// sustituir el "AC" por areaSeleccionada.getCodigo()
+				Servicio service(serviceName, servicePriority, "AC");
+				serviceList->append(service);
+
+				cout << endl << "* Accion realizada con exito *" << endl;
+			}
+			if (listMenu->getElement() == "Eliminar") {
+				cout << "estoy aqui, wooo" << endl;
+			}
+			if (listMenu->getElement() == "Reordenar") {
+				cout << "estoy aqui, wooo" << endl;
+			}
+			// Opción de regresar
+			if (currentSelection == menuSize - 1) {
+				delete listMenu;
+				return false;
+			}
+			system("pause");
+		}
+	}
 }
 
 // MENÚ ADMINISTRACIÓN. Sub-menú del principal. Se encarga
 // de dar opciones para listas o colas de usuarios, áreas y servicios
 bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList) {
 	// Opciones del menú
-	const int menuSize = 4;
+	const int menuSize = 5;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
 	listMenu->append("Tipo de Usuario");
 	listMenu->append("Areas");
 	listMenu->append("Servicios disponibles");
+	listMenu->append("Limpiar Colas y Estadisticas");
 	listMenu->append("Regresar");
 	int currentSelection = 0;
 	
@@ -189,6 +275,9 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList) {
 				if (!serviciosMenu) {
 					continue;
 				}
+			}
+			if (listMenu->getElement() == "Limpiar Colas y Estadisticas") {
+				cout << "estoy aqui, wooo" << endl;
 			}
 			if (currentSelection == menuSize - 1) {
 				delete listMenu;
@@ -345,7 +434,7 @@ bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>*
 
 // MENÚ TIQUETES. Sub-menú del principal. Para pedir la creación de un tiquete.
 bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList,
-	List<Servicio>* serviceList) {
+					List<Servicio>* serviceList) {
 	const int menuSize = 2;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
 	listMenu->append("Creacion de Tiquete");
@@ -477,9 +566,6 @@ int main() {
 	PriorityQueue<Usuario>* colaUsuarios = new HeapPriorityQueue<Usuario>();
     PriorityQueue<Tiquete>* colaTiquetes = new HeapPriorityQueue<Tiquete>();
     List<Servicio>* listaServicios = new ArrayList<Servicio>();
-    
-	Servicio service("hola", 0, "AC");
-	listaServicios->append(service);
 
 	menuPrincipal(colaUsuarios, colaTiquetes, listaServicios);
 

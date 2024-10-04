@@ -32,7 +32,8 @@ public:
 
     // Constructor con lista de inicialización
     Area(const string& titulo, const string& codigo, int cantidadVentanillas /*const LinkedQueue<Tiquete>& listaTiquetes*/)
-        : tituloArea(titulo), codigo(codigo), cantidadVentanillas(cantidadVentanillas) /*listaTiquetes(make_unique<LinkedQueue<Tiquete>>(listaTiquetes)/*, listaVentanillas(make_unique<LinkedQueue<Ventanilla>>(listaVentanillas)*/) {}
+        : tituloArea(titulo), codigo(codigo), 
+        cantidadVentanillas(cantidadVentanillas) /*listaTiquetes(make_unique<LinkedQueue<Tiquete>>(listaTiquetes), listaVentanillas(make_unique<LinkedQueue<Ventanilla>>(listaVentanillas))*/ {}
 
     // Operador de asignación
     Area& operator=(const Area& other) {
@@ -41,13 +42,13 @@ public:
             codigo = other.codigo;
             cantidadVentanillas = other.cantidadVentanillas;
             //listaTiquetes = make_unique<LinkedQueue<Tiquete>>(*other.listaTiquetes);
-          //  listaVentanilla = make_unique<LinkedQueue<Ventanilla>>(*other.listaVentanillas);
+           // listaVentanilla = make_unique<LinkedQueue<Ventanilla>>(*other.listaVentanillas);
         }
         return *this; // Devuelve la referencia al objeto actual
     }
 
     // Método para agregar o modificar un área
-    void agregarArea(const string& titulo, const string& codigo, int cantidadVentanillas, const LinkedQueue<Tiquete>& nuevaListaTiquetes/*, const LinkedQueue<Ventanilla>& nuevaListaVentanillas*/) {
+    void agregarArea(const string& titulo, const string& codigo, int cantidadVentanillas /*const LinkedQueue<Tiquete>& nuevaListaTiquetes, const LinkedQueue<Ventanilla>& nuevaListaVentanillas*/) {
         this->tituloArea = titulo;
         this->codigo = codigo;
         this->cantidadVentanillas = cantidadVentanillas;
