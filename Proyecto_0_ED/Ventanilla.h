@@ -1,8 +1,10 @@
 /*
             Archivo: Clase Ventanilla
-            Hecho por:
+            Hecho por:Britany Romero 
 
-            Descripción general:
+            Descripción general:Es un punto ( clase ) donde se atienden los clientes. 
+            Cada ventanilla tiene un código único y puede atender a clientes mediante un sistema de tiquetes. 
+            Además, registra la hora en que se brinda la atención.
 
             Modificación hecha por: Carmen Hidalgo Paz
 
