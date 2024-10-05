@@ -24,6 +24,7 @@ class Tiquete {
 public:
 	string areaCode;
 	string code;
+	time_t segundos;
 	tm horaCreation;
 	int prioridadUser;
 	int prioridadServicio;
@@ -45,10 +46,16 @@ public:
 		tm gmtMinus6Time;
 		gmtime_s(&gmtMinus6Time, &gmt_minus_6);
 
+		this->segundos = tiempoActual;
 		this->horaCreation = gmtMinus6Time;
 		this->prioridadUser = prioridadUser;
 		this->prioridadServicio = prioridadServicio;
 		this->prioridadFinal = prioridadUser * 10 + prioridadServicio;
+	}
+	bool operator ==(const Tiquete& other) {
+		return this->code == other.code
+			&& this->prioridadFinal == other.prioridadFinal
+			&& this->segundos == other.segundos;
 	}
 	void operator =(const Tiquete& other) {
 		this->areaCode = other.areaCode;
@@ -61,6 +68,10 @@ public:
 
 	string getCode() {
 		return code;
+	}
+
+	time_t getSeconds() {
+		return segundos;
 	}
 
 	void getTime(){

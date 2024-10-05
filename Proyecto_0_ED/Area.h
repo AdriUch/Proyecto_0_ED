@@ -7,6 +7,11 @@
 			en una lista. Se detalla el funcionamiento de
 			la asignación, las comparaciones entre objetos y la impresión.
 
+            Modificación hecha por: Carmen Hidalgo Paz
+
+            Descripción: Se detalla el funcionamiento de las comparaciones
+            entre objetos y de la impresión de los datos.
+
 */
 
 #pragma once
@@ -47,6 +52,13 @@ public:
         delete listaVentanillas;
     }
 
+    bool operator ==(const Area& other) {
+        return this->tituloArea == other.tituloArea && this->codigo == other.codigo
+            && this->cantidadVentanillas == other.cantidadVentanillas
+            && this->listaTiquetes == other.listaTiquetes
+            && this->listaVentanillas == other.listaVentanillas;
+    }
+    
     // Operador de asignación. Evita problemas con los "=" de ciertas funciones
     Area& operator=(const Area& other) {
         if (this != &other) {
@@ -108,6 +120,11 @@ public:
     void mostrarInfoArea() const {
         std::cout << "Area: " << tituloArea << " | Codigo: " << codigo << " | Ventanillas: " << cantidadVentanillas << std::endl;
     }
+
+    friend ostream& operator <<(ostream& os, const Area& areaInfo) {
+        os << "Area: " << areaInfo.tituloArea << " | Codigo: "
+            << areaInfo.codigo << " | Ventanillas: "
+            << areaInfo.cantidadVentanillas << std::endl;
+        return os;
+    }
 };
-
-

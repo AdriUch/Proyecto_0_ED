@@ -37,7 +37,7 @@ using std::to_string;
 
 int numGlobal = 100;
 
-// - - - - -  - - - - - MENÚS - - - - - - - - - -
+// - - - - -  - - - - - MANEJO MENÚS - - - - - - - - - -
 
 // Función para mostrar un menú
 template <typename E>
@@ -52,56 +52,94 @@ void mostrarMenu(int currentSelection, List<E>* opciones, int size) {
 		}
 	}
 }
+// Manejo de flechas presionadas en el menú
+int keysMenu(int key, int currentSelection, int menuSize) {
+	if (key == 224) {
+		key = _getch();
+		switch (key) {
+		case 72: // Flecha arriba
+			if (currentSelection > 0) {
+				currentSelection--;
+			}
+			break;
+		case 80: // Flecha abajo
+			if (currentSelection < menuSize - 1) {
+				currentSelection++;
+			}
+			break;
+		}
+	}
 
+	return currentSelection;
+}
+// - - - - -  - - - - - FIN MANEJO MENÚS - - - - - - - - - -
 
 // - - - - - MENÚS ADMINISTRACIÓN - - - - -
 
-// Sub-menú de Admin. Realiza las operaciones de los usuarios.
-bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
+// Función para seleccionar un área desde la lista de áreas disponibles
+Area selectionArea(ArrayList<Area>& areas) {
+	// Verificar si hay áreas disponibles
+	if (areas.getSize() == 0) {
+		cout << "No hay áreas disponibles para seleccionar." << endl;
+		throw std::runtime_error("No hay áreas disponibles.");
+	}
+
+	// Mostrar la lista de áreas con su índice
+	cout << "Seleccione el área que desea:" << endl;
+	for (int i = 0; i < areas.getSize(); ++i) {
+		cout << i << ". " << areas.getTheElement(i).getTituloArea() << " (Código: " << areas.getTheElement(i).getCodigo() << ")" << endl;
+	}
+
+	// Obtener la selección del usuario
+	int seleccion;
+	cout << "Ingrese el número del área que desea seleccionar: ";
+	cin >> seleccion;
+
+	// Validar que la selección esté dentro del rango válido
+	if (seleccion < 0 || seleccion >= areas.getSize()) {
+		cout << "Selección no válida." << endl;
+		throw std::out_of_range("Selección fuera de rango.");
+	}
+
+	// Retornar el área seleccionada
+	return areas.getTheElement(seleccion);
+}
+
+
+
+bool menuServicios(List<Servicio>* serviceList) {
 	// Opciones del menú
-	const int menuSize = 3;
+	const int menuSize = 4;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
 	listMenu->append("Agregar");
 	listMenu->append("Eliminar");
+	listMenu->append("Reordenar");
 	listMenu->append("Regresar");
 	int currentSelection = 0;
-	
+
 	// Manejo de teclas presionadas en el menú
 	while (true) {
 		system("cls");
 		// Se muestran las opciones del menú
-		cout << "* * * Menu de Usuarios * * *" << endl;
+		cout << "* * * Menu de Servicios * * *" << endl;
 		mostrarMenu(currentSelection, listMenu, menuSize);
 
 		int key = _getch();
-		if (key == 224) {
-			key = _getch();
-			switch (key) {
-			case 72: // Flecha arriba
-				if (currentSelection > 0) {
-					currentSelection--;
-				}
-				break;
-			case 80: // Flecha abajo
-				if (currentSelection < menuSize - 1) {
-					currentSelection++;
-				}
-				break;
-			}
-		}
-		else if (key == 13) { // Enter
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
 			system("cls");
 			listMenu->goToPos(currentSelection);
 			if (listMenu->getElement() == "Agregar") {
 				// Se pide al usuario un número y un string
-				string userName;
-				int userPriority;
-				cout << "Ingrese el nombre de usuario que desea agregar: ";
-				getline(cin, userName);
+				string serviceName;
+				int servicePriority;
+				cout << "Ingrese el nombre del servicio que desea agregar: ";
+				getline(cin, serviceName);
 
 				while (true) {
-					cout << endl << "Ingrese la prioridad del tipo de usuario: ";
-					cin >> userPriority;
+					cout << endl << "Ingrese la prioridad del servicio: ";
+					cin >> servicePriority;
 
 					if (cin.fail()) {
 						cin.clear();
@@ -113,13 +151,21 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 						break;
 					}
 				}
-				// Se crea el objeto Usuario y se agrega a la lista
-				Usuario user(userPriority, userName);
-				userList->insert(user, user.getPriority());
+
+				// Selección de área
+				//Area areaSeleccionada = selectionArea(areaList);
+
+				// Se crea el objeto Servicio y se agrega a la lista
+				// sustituir el "AC" por areaSeleccionada.getCodigo()
+				Servicio service(serviceName, servicePriority, "AC");
+				serviceList->append(service);
 
 				cout << endl << "* Accion realizada con exito *" << endl;
 			}
 			if (listMenu->getElement() == "Eliminar") {
+				cout << "estoy aqui, wooo" << endl;
+			}
+			if (listMenu->getElement() == "Reordenar") {
 				cout << "estoy aqui, wooo" << endl;
 			}
 			// Opción de regresar
@@ -131,6 +177,7 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 		}
 	}
 }
+
 // Sub-menú de Admin. Realiza las operaciones de las áreas
 bool menuAreas(ArrayList<Area>& areas) {
 	int totalArea = areas.getSize();
@@ -149,22 +196,9 @@ bool menuAreas(ArrayList<Area>& areas) {
 
 		//Manejo de las teclas de selección
 		int key = _getch();
-		if (key == 224) {
-			key = _getch();
-			switch (key) {
-			case 72:
-				if (currentSelection > 0) {
-					currentSelection--;
-				}
-				break;
-			case 80:
-				if (currentSelection < menuSize - 1) {
-					currentSelection++;
-				}
-				break;
-			}
-		}
-		else if (key == 13) {  // Enter key
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) {  // Enter key
 			system("cls");
 			listMenu->goToPos(currentSelection);
 			if (listMenu->getElement() == "Agregar") {
@@ -179,7 +213,7 @@ bool menuAreas(ArrayList<Area>& areas) {
 				cin >> cantidadVentanillas;
 
 				// Crear una nueva área usando el constructor adecuado
-				Area nuevaArea(titulo, codigo, cantidadVentanillas, 5, 5); 
+				Area nuevaArea(titulo, codigo, cantidadVentanillas, 5, 5);
 				areas.append(nuevaArea);
 
 				cout << "* Area agregada con exito *" << endl;
@@ -231,83 +265,39 @@ bool menuAreas(ArrayList<Area>& areas) {
 	delete listMenu;
 }
 
-// Función para seleccionar un área desde la lista de áreas disponibles
-Area selectionArea(ArrayList<Area>& areas) {
-	// Verificar si hay áreas disponibles
-	if (areas.getSize() == 0) {
-		cout << "No hay áreas disponibles para seleccionar." << endl;
-		throw std::runtime_error("No hay áreas disponibles.");
-	}
-
-	// Mostrar la lista de áreas con su índice
-	cout << "Seleccione el área que desea:" << endl;
-	for (int i = 0; i < areas.getSize(); ++i) { 
-		cout << i << ". " << areas.getTheElement(i).getTituloArea() << " (Código: " << areas.getTheElement(i).getCodigo() << ")" << endl;
-	}
-
-	// Obtener la selección del usuario
-	int seleccion;
-	cout << "Ingrese el número del área que desea seleccionar: ";
-	cin >> seleccion;
-
-	// Validar que la selección esté dentro del rango válido
-	if (seleccion < 0 || seleccion >= areas.getSize()) {
-		cout << "Selección no válida." << endl;
-		throw std::out_of_range("Selección fuera de rango.");
-	}
-
-	// Retornar el área seleccionada
-	return areas.getTheElement(seleccion);
-}
-
-
-
-bool menuServicios(List<Servicio>* serviceList) {
+// Sub-menú de Admin. Realiza las operaciones de los usuarios.
+bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 	// Opciones del menú
-	const int menuSize = 4;
+	const int menuSize = 3;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
 	listMenu->append("Agregar");
 	listMenu->append("Eliminar");
-	listMenu->append("Reordenar");
 	listMenu->append("Regresar");
 	int currentSelection = 0;
-
+	
 	// Manejo de teclas presionadas en el menú
 	while (true) {
 		system("cls");
 		// Se muestran las opciones del menú
-		cout << "* * * Menu de Servicios * * *" << endl;
+		cout << "* * * Menu de Usuarios * * *" << endl;
 		mostrarMenu(currentSelection, listMenu, menuSize);
 
 		int key = _getch();
-		if (key == 224) {
-			key = _getch();
-			switch (key) {
-			case 72: // Flecha arriba
-				if (currentSelection > 0) {
-					currentSelection--;
-				}
-				break;
-			case 80: // Flecha abajo
-				if (currentSelection < menuSize - 1) {
-					currentSelection++;
-				}
-				break;
-			}
-		}
-		else if (key == 13) { // Enter
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
 			system("cls");
 			listMenu->goToPos(currentSelection);
 			if (listMenu->getElement() == "Agregar") {
 				// Se pide al usuario un número y un string
-				string serviceName;
-				int servicePriority;
-				cout << "Ingrese el nombre del servicio que desea agregar: ";
-				getline(cin, serviceName);
+				string userName;
+				int userPriority;
+				cout << "Ingrese el nombre de usuario que desea agregar: ";
+				getline(cin, userName);
 
 				while (true) {
-					cout << endl << "Ingrese la prioridad del servicio: ";
-					cin >> servicePriority;
+					cout << endl << "Ingrese la prioridad del tipo de usuario: ";
+					cin >> userPriority;
 
 					if (cin.fail()) {
 						cin.clear();
@@ -319,21 +309,13 @@ bool menuServicios(List<Servicio>* serviceList) {
 						break;
 					}
 				}
-				
-				// Selección de área
-				//Area areaSeleccionada = selectionArea(areaList);
-				
-				// Se crea el objeto Servicio y se agrega a la lista
-				// sustituir el "AC" por areaSeleccionada.getCodigo()
-				Servicio service(serviceName, servicePriority, "AC");
-				serviceList->append(service);
+				// Se crea el objeto Usuario y se agrega a la lista
+				Usuario user(userPriority, userName);
+				userList->insert(user, user.getPriority());
 
 				cout << endl << "* Accion realizada con exito *" << endl;
 			}
 			if (listMenu->getElement() == "Eliminar") {
-				cout << "estoy aqui, wooo" << endl;
-			}
-			if (listMenu->getElement() == "Reordenar") {
 				cout << "estoy aqui, wooo" << endl;
 			}
 			// Opción de regresar
@@ -366,22 +348,9 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList) {
 		mostrarMenu(currentSelection, listMenu, menuSize);
 
 		int key = _getch();
-		if (key == 224) {
-			key = _getch();
-			switch (key) {
-			case 72: // Flecha arriba
-				if (currentSelection > 0) {
-					currentSelection--;
-				}
-				break;
-			case 80: // Flecha abajo
-				if (currentSelection < menuSize - 1) {
-					currentSelection++;
-				}
-				break;
-			}
-		}
-		else if (key == 13) { // Enter
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
 			system("cls");
 			listMenu->goToPos(currentSelection);
 			// Agregar/Eliminar usuario
@@ -413,7 +382,7 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList) {
 		}
 	}
 }
-
+// - - - - - FIN MENÚS ADMINISTRACIÓN - - - - -
 
 // - - - - - MENÚS TIQUETES - - - - -
 
@@ -430,22 +399,9 @@ Servicio selectionService(List<Servicio>* serviceList) {
 		mostrarMenu(currentSelection, serviceList, menuSize);
 
 		int key = _getch();
-		if (key == 224) {
-			key = _getch();
-			switch (key) {
-			case 72: // Flecha arriba
-				if (currentSelection > 0) {
-					currentSelection--;
-				}
-				break;
-			case 80: // Flecha abajo
-				if (currentSelection < menuSize - 1) {
-					currentSelection++;
-				}
-				break;
-			}
-		}
-		else if (key == 13) { // Enter
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+		
+		if (key == 13) { // Enter
 			// Seleccionar el servicio
 			serviceList->goToPos(currentSelection);
 
@@ -487,22 +443,9 @@ bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>*
 			mostrarMenu(currentSelection, arrayListUsers, menuSize);
 
 			int key = _getch();
-			if (key == 224) {
-				key = _getch();
-				switch (key) {
-				case 72: // Flecha arriba
-					if (currentSelection > 0) {
-						currentSelection--;
-					}
-					break;
-				case 80: // Flecha abajo
-					if (currentSelection < menuSize - 1) {
-						currentSelection++;
-					}
-					break;
-				}
-			}
-			else if (key == 13) { // Enter
+			currentSelection = keysMenu(key, currentSelection, menuSize);
+			
+			if (key == 13) { // Enter
 				system("cls");
 
 				if (currentSelection < menuSize) {
@@ -573,22 +516,9 @@ bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tick
 		mostrarMenu(currentSelection, listMenu, menuSize);
 
 		int key = _getch();
-		if (key == 224) {
-			key = _getch();
-			switch (key) {
-			case 72: // Flecha arriba
-				if (currentSelection > 0) {
-					currentSelection--;
-				}
-				break;
-			case 80: // Flecha abajo
-				if (currentSelection < menuSize - 1) {
-					currentSelection++;
-				}
-				break;
-			}
-		}
-		else if (key == 13) { // Enter
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
 			system("cls");
 			listMenu->goToPos(currentSelection);
 			// Crear un tiquete
@@ -606,7 +536,7 @@ bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tick
 		}
 	}
 }
-
+// - - - - - FIN MENÚS TIQUETES - - - - -
 
 // - - - - - MENÚ PRINCIPAL - - - - -
 
@@ -630,22 +560,9 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tic
 		mostrarMenu(currentSelection, listMenu, menuSize);
 
 		int key = _getch();
-		if (key == 224) {
-			key = _getch();
-			switch (key) {
-			case 72: // Flecha arriba
-				if (currentSelection > 0) {
-					currentSelection--;
-				}
-				break;
-			case 80: // Flecha abajo
-				if (currentSelection < menuSize - 1) {
-					currentSelection++;
-				}
-				break;
-			}
-		}
-		else if (key == 13) { // Enter
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
 			system("cls");
 			listMenu->goToPos(currentSelection);
 			// Impresión de áreas y ventanillas

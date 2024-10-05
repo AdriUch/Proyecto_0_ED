@@ -3,6 +3,11 @@
             Hecho por:
 
             Descripción general:
+
+            Modificación hecha por: Carmen Hidalgo Paz
+
+            Descripción: Se detalla el funcionamiento de las comparaciones
+            entre objetos.
 */
 
 
@@ -38,6 +43,12 @@ public:
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
     }
 
+    bool operator ==(const Ventanilla& other) {
+        return this->codigoVentanilla == other.codigoVentanilla
+            && this->tiqueteActual == other.tiqueteActual;
+    }
+    
+    
     // atiender un tiquete
     void atenderTiquete(PriorityQueue<Tiquete>& colaPrioridad) {
         if (colaPrioridad.isEmpty()) {
