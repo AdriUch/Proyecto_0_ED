@@ -1,17 +1,16 @@
 /*
-            Archivo: Clase Servicio
-            Hecho por:
+    Archivo: Clase Servicio
+    Hecho por: [Tu Nombre]
 
-            Descripción general:
-
-            Modificación hecha por: Carmen Hidalgo Paz
-
-            Descripción: Se detalla el funcionamiento de las comparaciones
-            entre objetos Se agregó el atributo contadorTiquetes y se actualizaron
-            los métodos para que se tomara en cuenta.
+    Descripción general: Clase que representa un servicio en el sistema.
+    Contiene atributos como descripción, prioridad, código de área y contador de tiquetes.
+    
+    Modificación hecha por: Carmen Hidalgo Paz
+    Descripción: Se detalla el funcionamiento de las comparaciones
+    entre objetos. Se agregó el atributo contadorTiquetes y se actualizaron
+    los métodos para que se tomara en cuenta.
 */
 
-//Britany trabajo aqui a muy altas horas de la noche
 #pragma once
 #include <iostream>
 #include <string>
@@ -21,20 +20,20 @@ using std::string;
 
 class Servicio {
 private:
-    string descripcion;
-    int prioridadServicio;
-    string areaCode;
-    int contadorTiquetes;
+    string descripcion;           // Descripción del servicio
+    int prioridadServicio;       // Prioridad del servicio
+    string areaCode;             // Código del área a la que pertenece
+    int contadorTiquetes;        // Contador de tiquetes atendidos
 
 public:
-   
+    // Constructor 
     Servicio() : descripcion(""), prioridadServicio(0), areaCode(""), contadorTiquetes(0) {}
 
-    // Constructor con parámetros
+
     Servicio(const string& descripcion, int prioridadServicio, const string& areaCode)
         : descripcion(descripcion), prioridadServicio(prioridadServicio), areaCode(areaCode), contadorTiquetes(0) {}
 
-  
+ 
     bool operator ==(const Servicio& other) const {
         return this->descripcion == other.descripcion && 
                this->prioridadServicio == other.prioridadServicio &&
@@ -42,7 +41,7 @@ public:
                this->contadorTiquetes == other.contadorTiquetes;
     }
 
-
+   
     bool operator <(const Servicio& other) const {
         return this->prioridadServicio < other.prioridadServicio; // Comparación por prioridad
     }
@@ -60,7 +59,7 @@ public:
     void incrementarContadorTiquetes() { contadorTiquetes++; }
     void setContadorTiquetes(int count) { contadorTiquetes = count; }
 
- 
+    
     friend ostream& operator <<(ostream& os, const Servicio& servicioInfo) {
         os << "Descripción: " << servicioInfo.descripcion 
            << ", Prioridad: " << servicioInfo.prioridadServicio 
@@ -69,30 +68,3 @@ public:
         return os;
     }
 };
-void reordenarServicios(List<Servicio>* serviceList) {
-    int n = serviceList->getSize();
-    bool swapped;
-
-    do {
-        swapped = false;
-        for (int i = 0; i < n - 1; i++) {
-            serviceList->goToPos(i);
-            Servicio current = serviceList->getElement();
-            serviceList->goToPos(i + 1);
-            Servicio next = serviceList->getElement();
-
-            // Comparar por prioridad
-            if (current.getPrioridadServicio() > next.getPrioridadServicio()) {
-                // Intercambiar servicios
-                serviceList->goToPos(i);
-                serviceList->remove();
-                serviceList->insert(next);
-                serviceList->goToPos(i + 1);
-                serviceList->remove();
-                serviceList->insert(current);
-                swapped = true;
-            }
-        }
-        n--;
-    } while (swapped);
-}
