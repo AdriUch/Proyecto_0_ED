@@ -57,4 +57,31 @@ public:
         return os;
     }
 };
+void reordenarServicios(List<Servicio>* serviceList) {
+    int n = serviceList->getSize();
+    bool swapped;
+
+    do {
+        swapped = false;
+        for (int i = 0; i < n - 1; i++) {
+            serviceList->goToPos(i);
+            Servicio current = serviceList->getElement();
+            serviceList->goToPos(i + 1);
+            Servicio next = serviceList->getElement();
+
+            // Comparar por prioridad o cualquier otro criterio
+            if (current.getPriority() > next.getPriority()) {
+                // Intercambiar servicios
+                serviceList->goToPos(i);
+                serviceList->remove();
+                serviceList->insert(next);
+                serviceList->goToPos(i + 1);
+                serviceList->remove();
+                serviceList->insert(current);
+                swapped = true;
+            }
+        }
+        n--;
+    } while (swapped);
+}
 
