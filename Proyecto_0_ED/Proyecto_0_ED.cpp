@@ -153,7 +153,7 @@ bool menuServicios(List<Servicio>* serviceList) {
                 }
 
                 // Selección de área
-                //Area areaSeleccionada = selectionArea(areaList);
+                // Area areaSeleccionada = selectionArea(areaList);
 
                 // Se crea el objeto Servicio y se agrega a la lista
                 // sustituir el "AC" por areaSeleccionada.getCodigo()
@@ -162,14 +162,16 @@ bool menuServicios(List<Servicio>* serviceList) {
 
                 cout << endl << "* Accion realizada con exito *" << endl;
             }
+//Britany agrego eliminar y reordenar
             if (listMenu->getElement() == "Eliminar") {
                 int eliminarIndex;
                 cout << "Ingrese el número de servicio que desea eliminar: ";
                 cin >> eliminarIndex;
-                
+
                 if (eliminarIndex < 0 || eliminarIndex >= serviceList->getSize()) {
                     cout << "Índice fuera de rango." << endl;
                 } else {
+                    // Eliminar el servicio directamente
                     serviceList->goToPos(eliminarIndex);
                     serviceList->remove();
                     cout << "Servicio eliminado con éxito." << endl;
@@ -177,7 +179,34 @@ bool menuServicios(List<Servicio>* serviceList) {
             }
             if (listMenu->getElement() == "Reordenar") {
                 cout << "* * * Reordenar Servicios * * *" << endl;
-                reordenarServicios(serviceList);
+
+                // Lógica de reordenamiento de servicios
+                int n = serviceList->getSize();
+                bool swapped;
+
+                do {
+                    swapped = false;
+                    for (int i = 0; i < n - 1; i++) {
+                        serviceList->goToPos(i);
+                        Servicio current = serviceList->getElement();
+                        serviceList->goToPos(i + 1);
+                        Servicio next = serviceList->getElement();
+
+                        // Comparar por prioridad
+                        if (current.getPrioridadServicio() > next.getPrioridadServicio()) {
+                            // Intercambiar servicios
+                            serviceList->goToPos(i);
+                            serviceList->remove();
+                            serviceList->insert(next);
+                            serviceList->goToPos(i + 1);
+                            serviceList->remove();
+                            serviceList->insert(current);
+                            swapped = true;
+                        }
+                    }
+                    n--;
+                } while (swapped);
+
                 cout << "Servicios reordenados con éxito." << endl;
             }
             // Opción de regresar
@@ -189,6 +218,7 @@ bool menuServicios(List<Servicio>* serviceList) {
         }
     }
 }
+
 
 
 // Sub-menú de Admin. Realiza las operaciones de las áreas
