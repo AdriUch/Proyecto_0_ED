@@ -159,7 +159,7 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 
                 cout << endl << "* Accion realizada con exito *" << endl;
             }
-//Britany agrego eliminar y reordenar
+			//Britany agrego eliminar y reordenar
             if (listMenu->getElement() == "Eliminar") {
                 int eliminarIndex;
                 cout << "Ingrese el número de servicio que desea eliminar: ";
@@ -402,7 +402,10 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList, Ar
 			}
 			// Agregar/ Eliminar áreas y modificar cantidad de ventanillas
 			if (listMenu->getElement() == "Areas") {
-				cout << "estoy aqui, wooo" << endl;
+				bool areasMenu = menuAreas(areas);
+				if (!areasMenu) {
+					continue;
+				}
 			}
 			// Agregar/Eliminar/Reordenar servicio
 			if (listMenu->getElement() == "Servicios disponibles") {
@@ -447,7 +450,7 @@ Servicio selectionService(List<Servicio>* serviceList) {
 
 			// Se modifica el contador de tiquetes del servicio
 			Servicio service = serviceList->remove();
-			service.setTicketCounter();
+			service.incrementarContadorTiquetes();
 			serviceList->insert(service);
 
 			Servicio servicioSeleccionado = serviceList->getElement();
@@ -457,8 +460,8 @@ Servicio selectionService(List<Servicio>* serviceList) {
 }
 
 // Sub-menú de Tiquete. Menú de selección de Usuario y creación de Tiquete
-bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList,
-						List<Servicio>* serviceList) {
+bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
+						ArrayList<Area>& areas) {
 	try {
 		List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
 		int prioridadUser = 0;
@@ -508,7 +511,17 @@ bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>*
 					// Creación de tiquete
 					Tiquete ticket(prioridadUser, servicioSeleccionado.getPrioridadServicio(), 
 								servicioSeleccionado.getAreaCode(), stringNumGlobal);
-					ticketList->insert(ticket, ticket.getFinalPriority());
+					
+					Area selectedArea;
+					for (int i = 0; i < areas.getSize(); i++) {
+						Area currentArea = areas.getElement();
+						if (servicioSeleccionado.getAreaCode() == currentArea.getCodigo()) {
+							selectedArea = currentArea;
+						}
+					}
+					selectedArea.getColaTiquetes().insert(ticket, ticket.getFinalPriority());
+
+					selectedArea.getColaTiquetes().print();
 
 					cout << endl << "* Accion realizada con exito *" << endl << endl;
 					cout << "Informacion del tiquete creado: " << endl;
@@ -542,8 +555,8 @@ bool selectionElements(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>*
 }
 
 // MENÚ TIQUETES. Sub-menú del principal. Para pedir la creación de un tiquete.
-bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList,
-					List<Servicio>* serviceList) {
+bool menuTiquetes(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
+					ArrayList<Area>& areas) {
 	const int menuSize = 2;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
 	listMenu->append("Creacion de Tiquete");
@@ -563,7 +576,7 @@ bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tick
 			listMenu->goToPos(currentSelection);
 			// Crear un tiquete
 			if (listMenu->getElement() == "Creacion de Tiquete") {
-				bool creacionTiquete = selectionElements(userList, ticketList, serviceList);
+				bool creacionTiquete = selectionElements(userList, serviceList, areas);
 				if (!creacionTiquete) {
 					continue;
 				}
@@ -582,8 +595,8 @@ bool menuTiquetes(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tick
 
 // Contiene sub-menús: Estado de Colas, Tiquetes, Atender,
 // Administración y Estadísticas del sistema
-void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* ticketList,
-					List<Servicio>* serviceList) {
+void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
+					ArrayList<Area>& areas) {
 	const int menuSize = 6;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
 	listMenu->append("Estado de las colas");
@@ -611,7 +624,7 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tic
 			}
 			// Opciones de manejo de tiquetes
 			if (listMenu->getElement() == "Tiquetes") {
-				bool tiquetesMenu = menuTiquetes(userList, ticketList, serviceList);
+				bool tiquetesMenu = menuTiquetes(userList, serviceList, areas);
 				if (!tiquetesMenu) {
 					continue;
 				}
@@ -622,7 +635,7 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tic
 			}
 			// Opciones para usuarios, áreas y servicios
 			if (listMenu->getElement() == "Administracion") {
-				bool adminMenu = menuAdmin(userList, serviceList);
+				bool adminMenu = menuAdmin(userList, serviceList, areas);
 				if (!adminMenu) {
 					continue;
 				}
@@ -647,18 +660,17 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, PriorityQueue<Tiquete>* tic
 int main() {
 	// Se crean todas las listas y colas que se van a utilizar
 	PriorityQueue<Usuario>* colaUsuarios = new HeapPriorityQueue<Usuario>();
-    PriorityQueue<Tiquete>* colaTiquetes = new HeapPriorityQueue<Tiquete>();
     List<Servicio>* listaServicios = new ArrayList<Servicio>();
+	ArrayList<Area> areaArrayList;
+	ArrayList<Area>& listaAreas = areaArrayList;
 
-	menuPrincipal(colaUsuarios, colaTiquetes, listaServicios);
+	menuPrincipal(colaUsuarios, listaServicios, listaAreas);
 
 	colaUsuarios->print();
-	colaTiquetes->print();
 	listaServicios->print();
 	
 	// No olvides liberar la memoria
 	delete colaUsuarios;
-    delete colaTiquetes;
     delete listaServicios;
     return 0;
 }

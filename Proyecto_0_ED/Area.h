@@ -17,6 +17,7 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include "PriorityQueue.h"
 #include "ArrayList.h"
 #include "Tiquete.h"
 #include "Ventanilla.h"
@@ -29,36 +30,36 @@ private:
     string tituloArea;
     string codigo;
     int cantidadVentanillas;
-    ArrayList<Tiquete>* listaTiquetes;      // Lista de tiquetes
+    PriorityQueue<Tiquete>* colaTiquetes;      // Lista de tiquetes
     ArrayList<Ventanilla>* listaVentanillas;  // Lista de ventanillas
 
 public:
     // Constructor base
     Area()
         : tituloArea(""), codigo(""), cantidadVentanillas(0),
-        listaTiquetes(new ArrayList<Tiquete>()),
+        colaTiquetes(new HeapPriorityQueue<Tiquete>()),
         listaVentanillas(new ArrayList<Ventanilla>()) {}
 
     // Constructor con parámetros
     Area(const string& titulo, const string& codigo, int cantidadVentanillas, int maxTiquetes, int maxVentanillas)
         : tituloArea(titulo), codigo(codigo), cantidadVentanillas(cantidadVentanillas) {
-        listaTiquetes = new ArrayList<Tiquete>(maxTiquetes);          // Usar ArrayList para lista de tiquetes
+        colaTiquetes = new HeapPriorityQueue<Tiquete>();              // Usar HeapPriorityQueue para cola de tiquetes
         listaVentanillas = new ArrayList<Ventanilla>(maxVentanillas);  // Usar ArrayList para lista de ventanillas
     }
 
     // Destructor
     ~Area() {
-        delete listaTiquetes;
+        delete colaTiquetes;
         delete listaVentanillas;
     }
 
     bool operator ==(const Area& other) {
         return this->tituloArea == other.tituloArea && this->codigo == other.codigo
             && this->cantidadVentanillas == other.cantidadVentanillas
-            && this->listaTiquetes == other.listaTiquetes
+            && this->colaTiquetes == other.colaTiquetes
             && this->listaVentanillas == other.listaVentanillas;
     }
-    
+
     // Operador de asignación. Evita problemas con los "=" de ciertas funciones
     Area& operator=(const Area& other) {
         if (this != &other) {
@@ -67,11 +68,11 @@ public:
             cantidadVentanillas = other.cantidadVentanillas;
 
             // Limpiar listas actuales
-            delete listaTiquetes;
+            delete colaTiquetes;
             delete listaVentanillas;
 
             // Copiar nuevas listas
-            listaTiquetes = new ArrayList<Tiquete>(*other.listaTiquetes);
+            colaTiquetes = new HeapPriorityQueue<Tiquete>(*other.colaTiquetes);
             listaVentanillas = new ArrayList<Ventanilla>(*other.listaVentanillas);
         }
         return *this;
@@ -84,8 +85,8 @@ public:
         this->cantidadVentanillas = cantidadVentanillas;
 
         // Eliminar listas actuales y crear nuevas
-        delete listaTiquetes;
-        listaTiquetes = new ArrayList<Tiquete>(maxTiquetes);
+        delete colaTiquetes;
+        colaTiquetes = new HeapPriorityQueue<Tiquete>();
 
         delete listaVentanillas;
         listaVentanillas = new ArrayList<Ventanilla>(maxVentanillas);
@@ -108,14 +109,14 @@ public:
 
         // 1. Mostrar los tiquetes asociados a esta área
         std::cout << "Tiquetes relacionados al área que se eliminarán:\n";
-        for (int i = 0; i < areaEliminar.getListaTiquetes().getSize(); ++i) {
-            cout << " - Tiquete ID: " << areaEliminar.getListaTiquetes().getElement() << "\n";
+        for (int i = 0; i < areaEliminar.getColaTiquetes().getSize(); ++i) {
+            cout << " - Tiquete ID: " << areaEliminar.getColaTiquetes().min() << "\n";
         }
 
         // 2. Confirmación del usuario antes de eliminar
         std::cout << "¿Deseas eliminar el área y sus elementos relacionados? (S/N): ";
         char confirmacion;
-        cin >> confirmacion;
+        std::cin >> confirmacion;
         if (confirmacion != 'S' && confirmacion != 's') {
             cout << "Operación cancelada.\n";
             return;
@@ -123,8 +124,8 @@ public:
 
         // 3. Eliminar los tiquetes asociados a esta área
         cout << "Eliminando tiquetes relacionados al área...\n";
-        while (areaEliminar.getListaTiquetes().getSize() > 0) {
-            areaEliminar.getListaTiquetes().remove();  // Remueve cada tiquete desde la posición 0
+        while (areaEliminar.getColaTiquetes().getSize() > 0) {
+            areaEliminar.getColaTiquetes().removeMin();  // Remueve cada tiquete desde la posición 0
         }
 
         // 4. Eliminar las ventanillas relacionadas a esta área
@@ -148,7 +149,7 @@ public:
     int getCantidadVentanillas() const { return cantidadVentanillas; }
 
     // Obtiene las referencias a las listas de tiquetes y ventanillas
-    ArrayList<Tiquete>& getListaTiquetes() const { return *listaTiquetes; }
+    PriorityQueue<Tiquete>& getColaTiquetes() const { return *colaTiquetes; }
     ArrayList<Ventanilla>& getListaVentanillas() const { return *listaVentanillas; }
 
     // Método para mostrar la información del área
