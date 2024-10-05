@@ -1,10 +1,10 @@
 /*
     Archivo: Clase Servicio
-    Hecho por: [Tu Nombre]
+    Hecho por: Britany Romero 
+    Descripción general: Es basicamente un servicio que se ofrece a los clientes. 
+    Cada servicio tiene una descripción, un nivel de prioridad, un código de área y un contador que rastrea cuántos tiquetes se han atendido. 
+    Esta clase nos deja gestionar y comparar diferentes servicios.
 
-    Descripción general: Clase que representa un servicio en el sistema.
-    Contiene atributos como descripción, prioridad, código de área y contador de tiquetes.
-    
     Modificación hecha por: Carmen Hidalgo Paz
     Descripción: Se detalla el funcionamiento de las comparaciones
     entre objetos. Se agregó el atributo contadorTiquetes y se actualizaron
