@@ -78,36 +78,33 @@ int keysMenu(int key, int currentSelection, int menuSize) {
 
 // Función para seleccionar un área desde la lista de áreas disponibles
 Area selectionArea(ArrayList<Area>& areas) {
-	// Verificar si hay áreas disponibles
 	if (areas.getSize() == 0) {
 		cout << "No hay áreas disponibles para seleccionar." << endl;
 		throw std::runtime_error("No hay áreas disponibles.");
 	}
 
-	// Mostrar la lista de áreas con su índice
-	cout << "Seleccione el área que desea:" << endl;
-	for (int i = 0; i < areas.getSize(); ++i) {
-		cout << i << ". " << areas.getTheElement(i).getTituloArea() << " (Código: " << areas.getTheElement(i).getCodigo() << ")" << endl;
+	int currentSelection = 0;
+	int menuSize = areas.getSize();
+
+	while (true) {
+		system("cls");
+		cout << "* * * Seleccione el área que desea * * *" << endl;
+
+		// Mostrar el menú con la lista de áreas usando `mostrarMenu`
+		mostrarMenu(currentSelection, &areas, menuSize);
+
+		int key = _getch();
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
+			return areas.getTheElement(currentSelection);
+		}
 	}
-
-	// Obtener la selección del usuario
-	int seleccion;
-	cout << "Ingrese el número del área que desea seleccionar: ";
-	cin >> seleccion;
-
-	// Validar que la selección esté dentro del rango válido
-	if (seleccion < 0 || seleccion >= areas.getSize()) {
-		cout << "Selección no válida." << endl;
-		throw std::out_of_range("Selección fuera de rango.");
-	}
-
-	// Retornar el área seleccionada
-	return areas.getTheElement(seleccion);
 }
 
 
 
-bool menuServicios(List<Servicio>* serviceList) {
+bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
     // Opciones del menú
     const int menuSize = 4;
     List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -153,7 +150,7 @@ bool menuServicios(List<Servicio>* serviceList) {
                 }
 
                 // Selección de área
-                // Area areaSeleccionada = selectionArea(areaList);
+                Area areaSeleccionada = selectionArea(areas);
 
                 // Se crea el objeto Servicio y se agrega a la lista
                 // sustituir el "AC" por areaSeleccionada.getCodigo()
@@ -373,7 +370,7 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 
 // MENÚ ADMINISTRACIÓN. Sub-menú del principal. Se encarga
 // de dar opciones para listas o colas de usuarios, áreas y servicios
-bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList) {
+bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList, ArrayList<Area>& areas) {
 	// Opciones del menú
 	const int menuSize = 5;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -409,7 +406,7 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList) {
 			}
 			// Agregar/Eliminar/Reordenar servicio
 			if (listMenu->getElement() == "Servicios disponibles") {
-				bool serviciosMenu = menuServicios(serviceList);
+				bool serviciosMenu = menuServicios(serviceList, areas);
 				if (!serviciosMenu) {
 					continue;
 				}

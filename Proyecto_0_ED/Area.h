@@ -101,10 +101,45 @@ public:
         if (posicionArea < 0 || posicionArea >= totalAreas) {
             throw std::out_of_range("Posición fuera de rango.");
         }
+
+        // Obtener el área a eliminar
+        Area& areaEliminar = areas[posicionArea];
+        cout << "Área seleccionada para eliminar: " << areaEliminar.getTituloArea() << " (Código: " << areaEliminar.getCodigo() << ")\n";
+
+        // 1. Mostrar los tiquetes asociados a esta área
+        std::cout << "Tiquetes relacionados al área que se eliminarán:\n";
+        for (int i = 0; i < areaEliminar.getListaTiquetes().getSize(); ++i) {
+            cout << " - Tiquete ID: " << areaEliminar.getListaTiquetes().getElement() << "\n";
+        }
+
+        // 2. Confirmación del usuario antes de eliminar
+        std::cout << "¿Deseas eliminar el área y sus elementos relacionados? (S/N): ";
+        char confirmacion;
+        cin >> confirmacion;
+        if (confirmacion != 'S' && confirmacion != 's') {
+            cout << "Operación cancelada.\n";
+            return;
+        }
+
+        // 3. Eliminar los tiquetes asociados a esta área
+        cout << "Eliminando tiquetes relacionados al área...\n";
+        while (areaEliminar.getListaTiquetes().getSize() > 0) {
+            areaEliminar.getListaTiquetes().remove();  // Remueve cada tiquete desde la posición 0
+        }
+
+        // 4. Eliminar las ventanillas relacionadas a esta área
+        cout << "Eliminando ventanillas relacionadas al área...\n";
+        while (areaEliminar.getListaVentanillas().getSize() > 0) {
+            areaEliminar.getListaVentanillas().remove();  // Remueve cada ventanilla desde la posición 0
+        }
+
+        // 5. Eliminar el área de la lista de áreas
         for (int i = posicionArea; i < totalAreas - 1; ++i) {
-            areas[i] = areas[i + 1];
+            areas[i] = areas[i + 1];  // Desplaza las áreas para eliminar la seleccionada
         }
         totalAreas--;
+
+        cout << "Área eliminada con éxito.\n";
     }
 
     // Getters
