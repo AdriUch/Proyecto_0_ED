@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <time.h>
 #include <conio.h> // Para elección del menú
+#include <locale>
 
 #include "MinHeap.h"
 #include "HeapPriorityQueue.h"
@@ -658,6 +659,8 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList
 }*/
 
 int main() {
+	std::locale::global(std::locale("es_ES.UTF-8"));  // Configurar la localización a español
+	setlocale(LC_ALL, "");
 	// Se crean todas las listas y colas que se van a utilizar
 	PriorityQueue<Usuario>* colaUsuarios = new HeapPriorityQueue<Usuario>();
     List<Servicio>* listaServicios = new ArrayList<Servicio>();
