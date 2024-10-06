@@ -1,16 +1,16 @@
-/*
-            Archivo: Clase ¡rea
-            Hecho por: Adri·n Ugalde
+Ôªø/*
+            Archivo: Clase √Årea
+            Hecho por: Adri√°n Ugalde
 
-            DescripciÛn general:Clase que contiene los atributos necesarios
-			para crear un objeto llamado Area para despuÈs guardarlo
+            Descripci√≥n general:Clase que contiene los atributos necesarios
+			para crear un objeto llamado Area para despu√©s guardarlo
 			en una lista. Se detalla el funcionamiento de
-			la asignaciÛn, las comparaciones entre objetos y la impresiÛn.
+			la asignaci√≥n, las comparaciones entre objetos y la impresi√≥n.
 
-            ModificaciÛn hecha por: Carmen Hidalgo Paz
+            Modificaci√≥n hecha por: Carmen Hidalgo Paz
 
-            DescripciÛn: Se detalla el funcionamiento de las comparaciones
-            entre objetos y de la impresiÛn de los datos.
+            Descripci√≥n: Se detalla el funcionamiento de las comparaciones
+            entre objetos y de la impresi√≥n de los datos.
 
 */
 
@@ -40,17 +40,29 @@ public:
         colaTiquetes(new HeapPriorityQueue<Tiquete>()),
         listaVentanillas(new ArrayList<Ventanilla>()) {}
 
-    // Constructor con par·metros
-    Area(const string& titulo, const string& codigo, int cantidadVentanillas, int maxTiquetes, int maxVentanillas)
+    // Constructor con parÔøΩmetros 
+    Area(const string& titulo, const string& codigo, int cantidadVentanillas)
         : tituloArea(titulo), codigo(codigo), cantidadVentanillas(cantidadVentanillas) {
-        colaTiquetes = new HeapPriorityQueue<Tiquete>();              // Usar HeapPriorityQueue para cola de tiquetes
-        listaVentanillas = new ArrayList<Ventanilla>(maxVentanillas);  // Usar ArrayList para lista de ventanillas
+        colaTiquetes = new HeapPriorityQueue<Tiquete>();              // Usar HeapPriorityQueue para cola de tiquetes 
+        listaVentanillas = new ArrayList<Ventanilla>(cantidadVentanillas);  // Usar ArrayList para lista de ventanillas 
     }
 
-    // Destructor
+    // Destructor 
     ~Area() {
         delete colaTiquetes;
         delete listaVentanillas;
+    }
+
+    //  Constructor de copia
+    Area(const Area& other)
+        : tituloArea(other.tituloArea), codigo(other.codigo), cantidadVentanillas(other.cantidadVentanillas) {
+        // Copiar nuevas listas 
+        colaTiquetes = new HeapPriorityQueue<Tiquete>();
+        while (!other.colaTiquetes->isEmpty()) {
+            colaTiquetes->insert(other.colaTiquetes->min(), other.colaTiquetes->minPriority());
+            other.colaTiquetes->removeMin();
+        }
+        listaVentanillas = new ArrayList<Ventanilla>(*other.listaVentanillas);  // Deep copy of listaVentanillas 
     }
 
     bool operator ==(const Area& other) {
@@ -60,25 +72,33 @@ public:
             && this->listaVentanillas == other.listaVentanillas;
     }
 
-    // Operador de asignaciÛn. Evita problemas con los "=" de ciertas funciones
+    // Operador de asignaci√≥n. Evita problemas con los "=" de ciertas funciones
     Area& operator=(const Area& other) {
         if (this != &other) {
             tituloArea = other.tituloArea;
             codigo = other.codigo;
             cantidadVentanillas = other.cantidadVentanillas;
 
-            // Limpiar listas actuales
-            delete colaTiquetes;
-            delete listaVentanillas;
+            // Limpiar colas y listas 
+            if (colaTiquetes != nullptr) {
+                delete colaTiquetes;
+            }
+            if (listaVentanillas != nullptr) {
+                delete listaVentanillas;
+            }
 
-            // Copiar nuevas listas
-            colaTiquetes = new HeapPriorityQueue<Tiquete>(*other.colaTiquetes);
+            // Copiar nuevas listas 
+            colaTiquetes = new HeapPriorityQueue<Tiquete>();
+            while (!other.colaTiquetes->isEmpty()) {
+                colaTiquetes->insert(other.colaTiquetes->min(), other.colaTiquetes->minPriority());
+                other.colaTiquetes->removeMin();
+            }
             listaVentanillas = new ArrayList<Ventanilla>(*other.listaVentanillas);
         }
         return *this;
     }
 
-    // MÈtodo para agregar o modificar un ·rea
+    // M√©todo para agregar o modificar un √°rea
     void agregarArea(const string& titulo, const string& codigo, int cantidadVentanillas, int maxTiquetes, int maxVentanillas) {
         this->tituloArea = titulo;
         this->codigo = codigo;
@@ -92,55 +112,55 @@ public:
         listaVentanillas = new ArrayList<Ventanilla>(maxVentanillas);
     }
 
-    // MÈtodo para modificar la cantidad de ventanillas
+    // M√©todo para modificar la cantidad de ventanillas
     void modificarVentanillas(int nuevaCantidad) {
         this->cantidadVentanillas = nuevaCantidad;
     }
 
-    // MÈtodo est·tico para eliminar un ·rea de un arreglo de ·reas
+    // M√©todo est√°tico para eliminar un √°rea de un arreglo de √°reas
     static void eliminarArea(Area* areas, int& totalAreas, int posicionArea) {
         if (posicionArea < 0 || posicionArea >= totalAreas) {
-            throw std::out_of_range("PosiciÛn fuera de rango.");
+            throw std::out_of_range("Posici√≥n fuera de rango.");
         }
 
-        // Obtener el ·rea a eliminar
+        // Obtener el √°rea a eliminar
         Area& areaEliminar = areas[posicionArea];
-        cout << "¡rea seleccionada para eliminar: " << areaEliminar.getTituloArea() << " (CÛdigo: " << areaEliminar.getCodigo() << ")\n";
+        cout << "√Årea seleccionada para eliminar: " << areaEliminar.getTituloArea() << " (C√≥digo: " << areaEliminar.getCodigo() << ")\n";
 
-        // 1. Mostrar los tiquetes asociados a esta ·rea
-        std::cout << "Tiquetes relacionados al ·rea que se eliminar·n:\n";
+        // 1. Mostrar los tiquetes asociados a esta √°rea
+        std::cout << "Tiquetes relacionados al √°rea que se eliminar√°n:\n";
         for (int i = 0; i < areaEliminar.getColaTiquetes().getSize(); ++i) {
             cout << " - Tiquete ID: " << areaEliminar.getColaTiquetes().min() << "\n";
         }
 
-        // 2. ConfirmaciÛn del usuario antes de eliminar
-        std::cout << "øDeseas eliminar el ·rea y sus elementos relacionados? (S/N): ";
+        // 2. Confirmaci√≥n del usuario antes de eliminar
+        std::cout << "¬øDeseas eliminar el √°rea y sus elementos relacionados? (S/N): ";
         char confirmacion;
         std::cin >> confirmacion;
         if (confirmacion != 'S' && confirmacion != 's') {
-            cout << "OperaciÛn cancelada.\n";
+            cout << "Operaci√≥n cancelada.\n";
             return;
         }
 
-        // 3. Eliminar los tiquetes asociados a esta ·rea
-        cout << "Eliminando tiquetes relacionados al ·rea...\n";
+        // 3. Eliminar los tiquetes asociados a esta √°rea
+        cout << "Eliminando tiquetes relacionados al √°rea...\n";
         while (areaEliminar.getColaTiquetes().getSize() > 0) {
-            areaEliminar.getColaTiquetes().removeMin();  // Remueve cada tiquete desde la posiciÛn 0
+            areaEliminar.getColaTiquetes().removeMin();  // Remueve cada tiquete desde la posici√≥n 0
         }
 
-        // 4. Eliminar las ventanillas relacionadas a esta ·rea
-        cout << "Eliminando ventanillas relacionadas al ·rea...\n";
+        // 4. Eliminar las ventanillas relacionadas a esta √°rea
+        cout << "Eliminando ventanillas relacionadas al √°rea...\n";
         while (areaEliminar.getListaVentanillas().getSize() > 0) {
-            areaEliminar.getListaVentanillas().remove();  // Remueve cada ventanilla desde la posiciÛn 0
+            areaEliminar.getListaVentanillas().remove();  // Remueve cada ventanilla desde la posici√≥n 0
         }
 
-        // 5. Eliminar el ·rea de la lista de ·reas
+        // 5. Eliminar el √°rea de la lista de √°reas
         for (int i = posicionArea; i < totalAreas - 1; ++i) {
-            areas[i] = areas[i + 1];  // Desplaza las ·reas para eliminar la seleccionada
+            areas[i] = areas[i + 1];  // Desplaza las √°reas para eliminar la seleccionada
         }
         totalAreas--;
 
-        cout << "¡rea eliminada con Èxito.\n";
+        cout << "√Årea eliminada con √©xito.\n";
     }
 
     // Getters
@@ -152,7 +172,7 @@ public:
     PriorityQueue<Tiquete>& getColaTiquetes() const { return *colaTiquetes; }
     ArrayList<Ventanilla>& getListaVentanillas() const { return *listaVentanillas; }
 
-    // MÈtodo para mostrar la informaciÛn del ·rea
+    // M√©todo para mostrar la informaci√≥n del √°rea
     void mostrarInfoArea() const {
         std::cout << "Area: " << tituloArea << " | Codigo: " << codigo << " | Ventanillas: " << cantidadVentanillas << std::endl;
     }

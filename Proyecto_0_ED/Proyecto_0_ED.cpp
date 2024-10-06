@@ -79,11 +79,6 @@ int keysMenu(int key, int currentSelection, int menuSize) {
 
 // Función para seleccionar un área desde la lista de áreas disponibles
 Area selectionArea(ArrayList<Area>& areas) {
-	if (areas.getSize() == 0) {
-		cout << "No hay áreas disponibles para seleccionar." << endl;
-		throw std::runtime_error("No hay áreas disponibles.");
-	}
-
 	int currentSelection = 0;
 	int menuSize = areas.getSize();
 
@@ -106,115 +101,127 @@ Area selectionArea(ArrayList<Area>& areas) {
 
 
 bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
-    // Opciones del menú
-    const int menuSize = 4;
-    List<string>* listMenu = new ArrayList<string>(menuSize);
-    listMenu->append("Agregar");
-    listMenu->append("Eliminar");
-    listMenu->append("Reordenar");
-    listMenu->append("Regresar");
-    int currentSelection = 0;
+	try {
+		// Opciones del menú
+		const int menuSize = 4;
+		List<string>* listMenu = new ArrayList<string>(menuSize);
+		listMenu->append("Agregar");
+		listMenu->append("Eliminar");
+		listMenu->append("Reordenar");
+		listMenu->append("Regresar");
+		int currentSelection = 0;
 
-    // Manejo de teclas presionadas en el menú
-    while (true) {
-        system("cls");
-        // Se muestran las opciones del menú
-        cout << "* * * Menu de Servicios * * *" << endl;
-        mostrarMenu(currentSelection, listMenu, menuSize);
+		// Manejo de teclas presionadas en el menú
+		while (true) {
+			system("cls");
+			// Se muestran las opciones del menú
+			cout << "* * * Menu de Servicios * * *" << endl;
+			mostrarMenu(currentSelection, listMenu, menuSize);
 
-        int key = _getch();
-        currentSelection = keysMenu(key, currentSelection, menuSize);
+			int key = _getch();
+			currentSelection = keysMenu(key, currentSelection, menuSize);
 
-        if (key == 13) { // Enter
-            system("cls");
-            listMenu->goToPos(currentSelection);
-            if (listMenu->getElement() == "Agregar") {
-                // Se pide al usuario un número y un string
-                string serviceName;
-                int servicePriority;
-                cout << "Ingrese el nombre del servicio que desea agregar: ";
-                getline(cin, serviceName);
+			if (key == 13) { // Enter
+				system("cls");
+				listMenu->goToPos(currentSelection);
+				if (listMenu->getElement() == "Agregar") {
+					
+					// Si no hay áreas creadas, tirar error
+					if (areas.getSize() == 0) {
+						throw std::runtime_error("No hay áreas disponibles para seleccionar.");
+					}
+					// Se pide al usuario un número y un string
+					string serviceName;
+					int servicePriority;
+					cout << "Ingrese el nombre del servicio que desea agregar: ";
+					getline(cin, serviceName);
 
-                while (true) {
-                    cout << endl << "Ingrese la prioridad del servicio: ";
-                    cin >> servicePriority;
+					while (true) {
+						cout << endl << "Ingrese la prioridad del servicio: ";
+						cin >> servicePriority;
 
-                    if (cin.fail()) {
-                        cin.clear();
-                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        cout << "* Por favor, ingrese un numero valido *" << endl;
-                    }
-                    else {
-                        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        break;
-                    }
-                }
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un numero valido *" << endl;
+						}
+						else {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+					}
 
-                // Selección de área
-                Area areaSeleccionada = selectionArea(areas);
+					// Selección de área
+					Area areaSeleccionada = selectionArea(areas);
 
-                // Se crea el objeto Servicio y se agrega a la lista
-                // sustituir el "AC" por areaSeleccionada.getCodigo()
-                Servicio service(serviceName, servicePriority, "AC");
-                serviceList->append(service);
+					// Se crea el objeto Servicio y se agrega a la lista
+					// sustituir el "AC" por areaSeleccionada.getCodigo()
+					Servicio service(serviceName, servicePriority, areaSeleccionada.getCodigo());
+					serviceList->append(service);
 
-                cout << endl << "* Accion realizada con exito *" << endl;
-            }
-			//Britany agrego eliminar y reordenar
-            if (listMenu->getElement() == "Eliminar") {
-                int eliminarIndex;
-                cout << "Ingrese el número de servicio que desea eliminar: ";
-                cin >> eliminarIndex;
+					cout << endl << "* Accion realizada con exito *" << endl;
+				}
+				if (listMenu->getElement() == "Eliminar") {
+					int eliminarIndex;
+					cout << "Ingrese el número de servicio que desea eliminar: ";
+					cin >> eliminarIndex;
 
-                if (eliminarIndex < 0 || eliminarIndex >= serviceList->getSize()) {
-                    cout << "Índice fuera de rango." << endl;
-                } else {
-                    // Eliminar el servicio directamente
-                    serviceList->goToPos(eliminarIndex);
-                    serviceList->remove();
-                    cout << "Servicio eliminado con éxito." << endl;
-                }
-            }
-            if (listMenu->getElement() == "Reordenar") {
-                cout << "* * * Reordenar Servicios * * *" << endl;
+					if (eliminarIndex < 0 || eliminarIndex >= serviceList->getSize()) {
+						cout << "Índice fuera de rango." << endl;
+					}
+					else {
+						// Eliminar el servicio directamente
+						serviceList->goToPos(eliminarIndex);
+						serviceList->remove();
+						cout << "Servicio eliminado con éxito." << endl;
+					}
+				}
+				if (listMenu->getElement() == "Reordenar") {
+					cout << "* * * Reordenar Servicios * * *" << endl;
 
-                // Lógica de reordenamiento de servicios
-                int n = serviceList->getSize();
-                bool swapped;
+					// Lógica de reordenamiento de servicios
+					int n = serviceList->getSize();
+					bool swapped;
 
-                do {
-                    swapped = false;
-                    for (int i = 0; i < n - 1; i++) {
-                        serviceList->goToPos(i);
-                        Servicio current = serviceList->getElement();
-                        serviceList->goToPos(i + 1);
-                        Servicio next = serviceList->getElement();
+					do {
+						swapped = false;
+						for (int i = 0; i < n - 1; i++) {
+							serviceList->goToPos(i);
+							Servicio current = serviceList->getElement();
+							serviceList->goToPos(i + 1);
+							Servicio next = serviceList->getElement();
 
-                        // Comparar por prioridad
-                        if (current.getPrioridadServicio() > next.getPrioridadServicio()) {
-                            // Intercambiar servicios
-                            serviceList->goToPos(i);
-                            serviceList->remove();
-                            serviceList->insert(next);
-                            serviceList->goToPos(i + 1);
-                            serviceList->remove();
-                            serviceList->insert(current);
-                            swapped = true;
-                        }
-                    }
-                    n--;
-                } while (swapped);
+							// Comparar por prioridad
+							if (current.getPrioridadServicio() > next.getPrioridadServicio()) {
+								// Intercambiar servicios
+								serviceList->goToPos(i);
+								serviceList->remove();
+								serviceList->insert(next);
+								serviceList->goToPos(i + 1);
+								serviceList->remove();
+								serviceList->insert(current);
+								swapped = true;
+							}
+						}
+						n--;
+					} while (swapped);
 
-                cout << "Servicios reordenados con éxito." << endl;
-            }
-            // Opción de regresar
-            if (currentSelection == menuSize - 1) {
-                delete listMenu;
-                return false;
-            }
-            system("pause");
-        }
-    }
+					cout << "Servicios reordenados con éxito." << endl;
+				}
+				// Opción de regresar
+				if (currentSelection == menuSize - 1) {
+					delete listMenu;
+					return false;
+				}
+				system("pause");
+			}
+		}
+	}
+		catch (const runtime_error& errorDetectado) {
+		std::cerr << "Error: " << errorDetectado.what() << endl;
+		system("pause");
+		return false;
+	}
 }
 
 
@@ -254,7 +261,7 @@ bool menuAreas(ArrayList<Area>& areas) {
 				cin >> cantidadVentanillas;
 
 				// Crear una nueva área usando el constructor adecuado
-				Area nuevaArea(titulo, codigo, cantidadVentanillas, 5, 5);
+				Area nuevaArea(titulo, codigo, cantidadVentanillas);
 				areas.append(nuevaArea);
 
 				cout << "* Area agregada con exito *" << endl;
@@ -635,14 +642,14 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList
 				cout << "estoy aqui, wooo";
 			}
 			// Opciones para usuarios, áreas y servicios
-			if (listMenu->getElement() == "Administracion") {
+			if (listMenu->getElement() == "Administración") {
 				bool adminMenu = menuAdmin(userList, serviceList, areas);
 				if (!adminMenu) {
 					continue;
 				}
 			}
 			// Consulta de ciertas estadísticas
-			if (listMenu->getElement() == "Estadisticas del sistema") {
+			if (listMenu->getElement() == "Estadísticas del sistema") {
 				cout << "estoy aqui, wooo";
 			}
 			if (currentSelection == menuSize - 1) {

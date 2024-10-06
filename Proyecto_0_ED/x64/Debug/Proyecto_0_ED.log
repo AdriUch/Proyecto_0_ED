@@ -1,2 +1,2 @@
 ﻿  Proyecto_0_ED.cpp
-C:\Users\hidal\OneDrive\Documents\Github\Proyecto_0_ED\Proyecto_0_ED\Area.h(75,58): error C2665: 'HeapPriorityQueue<Tiquete>::HeapPriorityQueue': no overloaded function could convert all the argument types
+  Proyecto_0_ED.vcxproj -> C:\Users\hidal\OneDrive\Documents\Github\Proyecto_0_ED\x64\Debug\Proyecto_0_ED.exe

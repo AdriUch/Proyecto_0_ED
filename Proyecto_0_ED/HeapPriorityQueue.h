@@ -32,6 +32,10 @@ public:
 		KVPair<int, E> p = pairs->first();
 		return p.value;
 	}
+	int minPriority() {
+		KVPair<int, E> p = pairs->first();
+		return p.key;
+	}
 	E removeMin() {
 		KVPair<int, E> p = pairs->removeFirst();
 		return p.value;
