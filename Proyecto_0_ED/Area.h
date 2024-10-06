@@ -30,7 +30,7 @@ private:
     string tituloArea;
     string codigo;
     int cantidadVentanillas;
-    PriorityQueue<Tiquete>* colaTiquetes;      // Lista de tiquetes
+    HeapPriorityQueue<Tiquete>* colaTiquetes;      // cola de tiquetes
     ArrayList<Ventanilla>* listaVentanillas;  // Lista de ventanillas
 
 public:
@@ -57,12 +57,8 @@ public:
     Area(const Area& other)
         : tituloArea(other.tituloArea), codigo(other.codigo), cantidadVentanillas(other.cantidadVentanillas) {
         // Copiar nuevas listas 
-        colaTiquetes = new HeapPriorityQueue<Tiquete>();
-        while (!other.colaTiquetes->isEmpty()) {
-            colaTiquetes->insert(other.colaTiquetes->min(), other.colaTiquetes->minPriority());
-            other.colaTiquetes->removeMin();
-        }
-        listaVentanillas = new ArrayList<Ventanilla>(*other.listaVentanillas);  // Deep copy of listaVentanillas 
+        colaTiquetes = new HeapPriorityQueue<Tiquete>(*other.colaTiquetes);
+        listaVentanillas = new ArrayList<Ventanilla>(*other.listaVentanillas);
     }
 
     bool operator ==(const Area& other) {
@@ -180,7 +176,9 @@ public:
     friend ostream& operator <<(ostream& os, const Area& areaInfo) {
         os << "Area: " << areaInfo.tituloArea << " | Codigo: "
             << areaInfo.codigo << " | Ventanillas: "
-            << areaInfo.cantidadVentanillas << std::endl;
+            << areaInfo.cantidadVentanillas << endl
+            << "Cola de Tiquetes" << endl;
+        areaInfo.colaTiquetes->print();
         return os;
     }
 };

@@ -27,6 +27,7 @@ public:
 	virtual void append(E element) = 0;
 	virtual E remove() = 0;
 	virtual E getElement() = 0;
+	virtual void setElement(E element) = 0;
 	virtual void clear() = 0;
 	virtual void goToStart() = 0;
 	virtual void goToEnd() = 0;

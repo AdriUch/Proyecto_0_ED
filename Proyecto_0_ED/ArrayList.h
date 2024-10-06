@@ -68,6 +68,10 @@ public:
 		return elements;
 	}
 
+	void setElement(E element) {
+		elements[pos] = element;
+	}
+
 	// Constructor de copia. Apoya los "other" de la función del operador de asignación
 	ArrayList(const ArrayList<E>& other) {
 		max = other.max;

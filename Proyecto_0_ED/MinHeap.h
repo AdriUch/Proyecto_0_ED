@@ -89,6 +89,17 @@ public:
 		size = 0;
 		this->max = max;
 	}
+	// Copy constructor for MinHeap
+	MinHeap(const MinHeap<E>& other) {
+		max = other.max;
+		size = other.size;
+		elements = new E[max];  // Allocate new memory for the elements
+
+		// Copy each element from the other heap into this one
+		for (int i = 0; i < size; i++) {
+			elements[i] = other.elements[i];
+		}
+	}
 	~MinHeap() {
 		delete[] elements;
 	}
@@ -100,6 +111,12 @@ public:
 		elements[size] = element;
 		size++;
 		siftUp(size - 1);
+	}
+	E getElementAt(int index) const {
+		if (index < 0 || index >= size) {
+			throw runtime_error("Index out of bounds.");
+		}
+		return elements[index];
 	}
 	E first() {
 		if (size == 0)

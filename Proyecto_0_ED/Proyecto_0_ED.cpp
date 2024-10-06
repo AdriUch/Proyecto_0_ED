@@ -217,7 +217,7 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 			}
 		}
 	}
-		catch (const runtime_error& errorDetectado) {
+	catch (const runtime_error& errorDetectado) {
 		std::cerr << "Error: " << errorDetectado.what() << endl;
 		system("pause");
 		return false;
@@ -228,90 +228,136 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 
 // Sub-menú de Admin. Realiza las operaciones de las áreas
 bool menuAreas(ArrayList<Area>& areas) {
-	int totalArea = areas.getSize();
-	const int menuSize = 4;
-	List<string>* listMenu = new ArrayList<string>(menuSize);
-	listMenu->append("Agregar");
-	listMenu->append("Modificar cantidad de ventanillas");
-	listMenu->append("Eliminar");
-	listMenu->append("Regresar");
-	int currentSelection = 0;
+	
+	try {
+		int totalArea = areas.getSize();
+		const int menuSize = 4;
+		List<string>* listMenu = new ArrayList<string>(menuSize);
+		listMenu->append("Agregar");
+		listMenu->append("Modificar cantidad de ventanillas");
+		listMenu->append("Eliminar");
+		listMenu->append("Regresar");
+		int currentSelection = 0;
 
-	while (true) {
-		system("cls");
-		cout << "* * * Menu de Areas * * *" << endl;
-		mostrarMenu(currentSelection, listMenu, menuSize);
-
-		//Manejo de las teclas de selección
-		int key = _getch();
-		currentSelection = keysMenu(key, currentSelection, menuSize);
-
-		if (key == 13) {  // Enter key
+		while (true) {
 			system("cls");
-			listMenu->goToPos(currentSelection);
-			if (listMenu->getElement() == "Agregar") {
-				string titulo, codigo;
-				int cantidadVentanillas;
+			cout << "* * * Menu de Areas * * *" << endl;
+			mostrarMenu(currentSelection, listMenu, menuSize);
 
-				cout << "Ingrese el titulo del area: ";
-				getline(cin, titulo);
-				cout << "Ingrese el codigo del area: ";
-				getline(cin, codigo);
-				cout << "Ingrese la cantidad de ventanillas: ";
-				cin >> cantidadVentanillas;
+			//Manejo de las teclas de selección
+			int key = _getch();
+			currentSelection = keysMenu(key, currentSelection, menuSize);
 
-				// Crear una nueva área usando el constructor adecuado
-				Area nuevaArea(titulo, codigo, cantidadVentanillas);
-				areas.append(nuevaArea);
+			if (key == 13) {  // Enter key
+				system("cls");
+				listMenu->goToPos(currentSelection);
+				if (listMenu->getElement() == "Agregar") {
+					string titulo, codigo;
+					int cantidadVentanillas;
 
-				cout << "* Area agregada con exito *" << endl;
-			}
-			//Modifica algún área ya existente
-			else if (listMenu->getElement() == "Modificar cantidad de ventanillas") {
-				int areaIndex;
-				cout << "Ingrese el indice del area a modificar: ";
-				cin >> areaIndex;
+					cout << "Ingrese el titulo del area: ";
+					getline(cin, titulo);
+					cout << "Ingrese el codigo del area: ";
+					getline(cin, codigo);
+					while (true) {
+						cout << "Ingrese la cantidad de ventanillas: ";
+						cin >> cantidadVentanillas;
 
-				//Cambia la cantidad de ventanillas
-				if (areaIndex >= 0 && areaIndex < areas.getSize()) {
-					int nuevaCantidad;
-					cout << "Cantidad actual: " << areas.getElement().getCantidadVentanillas() << endl;
-					cout << "Ingrese la nueva cantidad: ";
-					cin >> nuevaCantidad;
-					areas.getElement().modificarVentanillas(nuevaCantidad);
-					cout << "* Cantidad de ventanillas modificada con exito *" << endl;
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un numero valido *" << endl;
+						}
+						else {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+					}
+					// Crear una nueva área usando el constructor adecuado
+					Area nuevaArea(titulo, codigo, cantidadVentanillas);
+					areas.append(nuevaArea);
+
+					cout << "* Area agregada con exito *" << endl;
 				}
-				else {
-					cout << "Indice no valido." << endl;
-				}
-			}
-			//Eliminar el área seleccionada
-			else if (listMenu->getElement() == "Eliminar") {
-				int areaIndex;
-				cout << "Ingrese el indice del area a eliminar: ";
-				cin >> areaIndex;
+				//Modifica algún área ya existente
+				else if (listMenu->getElement() == "Modificar cantidad de ventanillas") {
+					int areaIndex;
+					cout << "Ingrese el indice del area a modificar: ";
+					cin >> areaIndex;
 
-				if (areaIndex >= 0 && areaIndex < areas.getSize()) {
-					string confirm;
-					cout << "Seguro que desea eliminar esta area? (s/n): ";
-					cin >> confirm;
-					if (confirm == "s" || confirm == "S") {
-						Area::eliminarArea(areas.getArray(), totalArea, areaIndex);
-						cout << "* Area eliminada con exito *" << endl;
+					//Cambia la cantidad de ventanillas
+					if (areaIndex >= 0 && areaIndex < areas.getSize()) {
+						int nuevaCantidad;
+						cout << "Cantidad actual: " << areas.getElement().getCantidadVentanillas() << endl;
+						while (true) {
+							cout << "Ingrese la nueva cantidad: ";
+							cin >> nuevaCantidad;
+
+							if (cin.fail()) {
+								cin.clear();
+								cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+								cout << "* Por favor, ingrese un numero valido *" << endl;
+							}
+							else {
+								cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+								break;
+							}
+						}
+						areas.getElement().modificarVentanillas(nuevaCantidad);
+						cout << "* Cantidad de ventanillas modificada con exito *" << endl;
+					}
+					else {
+						cout << "Indice no valido." << endl;
 					}
 				}
-				else {
-					cout << "Indice no valido." << endl;
+				//Eliminar el área seleccionada
+				else if (listMenu->getElement() == "Eliminar") {
+					int areaIndex;
+					while (true) {
+						cout << "Ingrese el indice del area a eliminar: ";
+						cin >> areaIndex;
+
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un numero valido *" << endl;
+						}
+						else {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+					}
+					if (areaIndex >= 0 && areaIndex < areas.getSize()) {
+						string confirm;
+						cout << "Seguro que desea eliminar esta area? (s/n): ";
+						cin >> confirm;
+						if (confirm == "s" || confirm == "S") {
+							Area::eliminarArea(areas.getArray(), totalArea, areaIndex);
+							cout << "* Area eliminada con exito *" << endl;
+						}
+					}
+					else {
+						cout << "Indice no valido." << endl;
+					}
 				}
+				if (currentSelection == menuSize - 1) {
+					delete listMenu;
+					return false;
+				}
+				system("pause");
 			}
-			if (currentSelection == menuSize - 1) {
-				return false;
-			}
-			system("pause");
 		}
 	}
-	delete listMenu;
+	catch (const runtime_error& errorDetectado) {
+		std::cerr << "Error: " << errorDetectado.what() << endl;
+		system("pause");
+		return false;
+	}
 }
+
+//Usuario userElimination() {
+
+//}
 
 // Sub-menú de Admin. Realiza las operaciones de los usuarios.
 bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
@@ -520,16 +566,15 @@ bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* service
 					Tiquete ticket(prioridadUser, servicioSeleccionado.getPrioridadServicio(), 
 								servicioSeleccionado.getAreaCode(), stringNumGlobal);
 					
-					Area selectedArea;
-					for (int i = 0; i < areas.getSize(); i++) {
+					areas.goToStart();
+					while (!areas.atEnd()) {
 						Area currentArea = areas.getElement();
 						if (servicioSeleccionado.getAreaCode() == currentArea.getCodigo()) {
-							selectedArea = currentArea;
+							currentArea.getColaTiquetes().insert(ticket, ticket.getFinalPriority());
+							areas.setElement(currentArea);
 						}
+						areas.next();
 					}
-					selectedArea.getColaTiquetes().insert(ticket, ticket.getFinalPriority());
-
-					selectedArea.getColaTiquetes().print();
 
 					cout << endl << "* Accion realizada con exito *" << endl << endl;
 					cout << "Informacion del tiquete creado: " << endl;
@@ -610,8 +655,8 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList
 	listMenu->append("Estado de las colas");
 	listMenu->append("Tiquetes");
 	listMenu->append("Atender");
-	listMenu->append("Administracion");
-	listMenu->append("Estadisticas del sistema");
+	listMenu->append("Administración");
+	listMenu->append("Estadísticas del sistema");
 	listMenu->append("Salir");
 	int currentSelection = 0;
 
@@ -676,8 +721,12 @@ int main() {
 
 	menuPrincipal(colaUsuarios, listaServicios, listaAreas);
 
+	cout << "Cola de Usuarios:" << endl;
 	colaUsuarios->print();
+	cout << "Lista de Servicios:" << endl;
 	listaServicios->print();
+	cout << "Lista de Areas:" << endl;
+	listaAreas.print();
 	
 	// No olvides liberar la memoria
 	delete colaUsuarios;

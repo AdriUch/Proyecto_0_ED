@@ -19,10 +19,18 @@ template <typename E>
 class HeapPriorityQueue : public PriorityQueue<E> {
 private:
 	MinHeap<KVPair<int, E>>* pairs;
+	int max;
 
 public:
 	HeapPriorityQueue(int max = DEFAULT_MAX) {
 		pairs = new MinHeap<KVPair<int, E>>(max);
+		this->max = max;
+	}
+	// Copy constructor for HeapPriorityQueue
+	HeapPriorityQueue(const HeapPriorityQueue<E>& other) {
+		max = other.max;
+		// Allocate a new MinHeap with the same capacity
+		pairs = new MinHeap<KVPair<int, E>>(*other.pairs);
 	}
 	void insert(E element, int priority) {
 		KVPair<int, E> p(priority, element);
