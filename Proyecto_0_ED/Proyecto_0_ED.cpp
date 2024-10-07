@@ -88,6 +88,35 @@ bool removeTickets(ArrayList<Area>& areas) {
 
 // - - - - - MENÚS ADMINISTRACIÓN - - - - -
 
+// - - MENÚ ADMIN: SERVICIOS - -
+
+int seleccionServicio(List<Servicio>* serviceList) {
+	int menuSize = serviceList->getSize();
+	int currentSelection = 0;
+	bool continueCycle = true;
+	while (continueCycle) {
+		system("cls");
+		cout << "* * * Seleccion de Borrado de Servicios * * *" << endl;
+
+		// Mostrar el menú con la lista de áreas usando `mostrarMenu`
+		mostrarMenu(currentSelection, serviceList, menuSize);
+
+		int key = _getch();
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
+			continueCycle = false;
+		}
+	}
+	return currentSelection;
+}
+
+bool borrarServicio(List<Servicio>* serviceList, int currentSelection) {
+	serviceList->goToPos(currentSelection);
+	serviceList->remove();
+	return false;
+}
+
 // Función para seleccionar un área desde la lista de áreas disponibles
 Area selectionArea(ArrayList<Area>& areas) {
 	int currentSelection = 0;
@@ -105,6 +134,36 @@ Area selectionArea(ArrayList<Area>& areas) {
 
 		if (key == 13) { // Enter
 			return areas.getTheElement(currentSelection);
+		}
+	}
+}
+
+//Sub-menú de elegir servicios
+Servicio selectionService(List<Servicio>* serviceList) {
+	int menuSize = serviceList->getSize();
+	int currentSelection = 0;
+
+	while (true) {
+		system("cls");
+		cout << "* * * Seleccion de Servicio * * *" << endl;
+
+		// Mostrar el menú de servicios
+		mostrarMenu(currentSelection, serviceList, menuSize);
+
+		int key = _getch();
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
+			// Seleccionar el servicio
+			serviceList->goToPos(currentSelection);
+
+			// Se modifica el contador de tiquetes del servicio
+			Servicio service = serviceList->remove();
+			service.incrementarContadorTiquetes();
+			serviceList->insert(service);
+
+			Servicio servicioSeleccionado = serviceList->getElement();
+			return servicioSeleccionado; // Devuelve el servicio seleccionado
 		}
 	}
 }
@@ -170,51 +229,80 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 					cout << endl << "* Accion realizada con exito *" << endl;
 				}
 				if (listMenu->getElement() == "Eliminar") {
-					int eliminarIndex;
-					cout << "Ingrese el número de servicio que desea eliminar: ";
-					cin >> eliminarIndex;
+					// Si las cola de usuarios está vacía
+					if (serviceList->getSize() == 0) {
+						throw runtime_error("* No hay Servicios disponibles *");
+						continue;
+					}
+					cout << "* * * Seleccion de Borrado de Servicios * * *" << endl;
+					int index = seleccionServicio(serviceList);
+					string confirm;
+					while (true) {
+						cout << endl << "¿Desea borrar este servicio?" << endl
+							 << "Tome en cuenta que también se borrarán todos los tiquetes." << endl
+							 << "Escriba S/s si desea continuar y N/n si no: ";
+						cin >> confirm;
 
-					if (eliminarIndex < 0 || eliminarIndex >= serviceList->getSize()) {
-						cout << "Índice fuera de rango." << endl;
+						if (confirm == "s" || confirm == "S") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							// Se borra el servicio
+							borrarServicio(serviceList, index);
+							// Se borran los tiquetes
+							removeTickets(areas);
+							cout << endl << "* Accion realizada con exito *" << endl;
+							system("pause");
+							break;
+						}
+						if (confirm == "n" || confirm == "N") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << endl << "* Accion abandonada *" << endl;
+							system("pause");
+							break;
+						}
+						else {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un valor válido *" << endl;
+						}
 					}
-					else {
-						// Eliminar el servicio directamente
-						serviceList->goToPos(eliminarIndex);
-						serviceList->remove();
-						cout << "Servicio eliminado con éxito." << endl;
-					}
+					continue;
 				}
 				if (listMenu->getElement() == "Reordenar") {
-					cout << "* * * Reordenar Servicios * * *" << endl;
+					cout << "* * * Reordenar Servicios * * *" << endl
+						 << "Escoja el servicio que desea cambiar a otra posicion:" << endl;
 
-					// Lógica de reordenamiento de servicios
-					int n = serviceList->getSize();
-					bool swapped;
+					Servicio selectedService = selectionService(serviceList);
+					int indexService = serviceList->indexOf(selectedService, 0);
 
-					do {
-						swapped = false;
-						for (int i = 0; i < n - 1; i++) {
-							serviceList->goToPos(i);
-							Servicio current = serviceList->getElement();
-							serviceList->goToPos(i + 1);
-							Servicio next = serviceList->getElement();
+					int newIndex;
+					while (true) {
+						cout << endl << "El servicio seleccionado se encuentra actualmente en la posicion "
+							<< indexService << endl;
+						cout << "Ingrese la posicion a la que desea reubicar el servicio."
+							<< "Puede elegir una posicion desde 0 hasta "
+							<< serviceList->getSize() - 1 << " inclusive: ";
+						cin >> newIndex;
 
-							// Comparar por prioridad
-							if (current.getPrioridadServicio() > next.getPrioridadServicio()) {
-								// Intercambiar servicios
-								serviceList->goToPos(i);
-								serviceList->remove();
-								serviceList->insert(next);
-								serviceList->goToPos(i + 1);
-								serviceList->remove();
-								serviceList->insert(current);
-								swapped = true;
-							}
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un numero valido *" << endl;
 						}
-						n--;
-					} while (swapped);
-
-					cout << "Servicios reordenados con éxito." << endl;
+						else {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+					}
+					serviceList->goToPos(indexService);
+					serviceList->remove();
+					if (newIndex == serviceList->getSize()) {
+						serviceList->append(selectedService);
+					}
+					else {
+						serviceList->goToPos(newIndex);
+						serviceList->insert(selectedService);
+					}
+					cout << "Servicio reordenado con éxito." << endl;
 				}
 				// Opción de regresar
 				if (currentSelection == menuSize - 1) {
@@ -232,6 +320,8 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 		return false;
 	}
 }
+
+// - - MENÚ ADMIN: ÁREAS - -
 
 void serviceElimination(ArrayList<Area>& areas, int currentAreaIndex,
 						List<Servicio>* serviceList) {
@@ -388,10 +478,13 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 						cin >> confirm;
 
 						if (confirm == "s" || confirm == "S") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							// Se borra el área
 							areaElimination(areas, selectedIndex);
 							// Se borran los servicios
-							serviceElimination(areas, selectedIndex, serviceList);
+							if (serviceList->getSize() != 0) {
+								serviceElimination(areas, selectedIndex, serviceList);
+							}
 							cout << endl << "* Accion realizada con exito *" << endl;
 							system("pause");
 							break;
@@ -425,6 +518,8 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 		return false;
 	}
 }
+
+// - - MENÚ ADMIN: USUARIOS - -
 
 bool userElimination(PriorityQueue<Usuario>* userList) {
 	int menuSize = userList->getSize();
@@ -531,6 +626,7 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList, ArrayList<Area>& areas) 
 						cin >> confirm;
 
 						if (confirm == "s" || confirm == "S") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							// Se borra el usuario
 							userElimination(userList);
 							// Se borran los tiquetes
@@ -629,36 +725,6 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 // - - - - - FIN MENÚS ADMINISTRACIÓN - - - - -
 
 // - - - - - MENÚS TIQUETES - - - - -
-
-//Sub-menú de elegir servivicios
-Servicio selectionService(List<Servicio>* serviceList) {
-	int menuSize = serviceList->getSize();
-	int currentSelection = 0;
-
-	while (true) {
-		system("cls");
-		cout << "* * * Seleccion de Servicio * * *" << endl;
-
-		// Mostrar el menú de servicios
-		mostrarMenu(currentSelection, serviceList, menuSize);
-
-		int key = _getch();
-		currentSelection = keysMenu(key, currentSelection, menuSize);
-		
-		if (key == 13) { // Enter
-			// Seleccionar el servicio
-			serviceList->goToPos(currentSelection);
-
-			// Se modifica el contador de tiquetes del servicio
-			Servicio service = serviceList->remove();
-			service.incrementarContadorTiquetes();
-			serviceList->insert(service);
-
-			Servicio servicioSeleccionado = serviceList->getElement();
-			return servicioSeleccionado; // Devuelve el servicio seleccionado
-		}
-	}
-}
 
 // Sub-menú de Tiquete. Menú de selección de Usuario y creación de Tiquete
 bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
