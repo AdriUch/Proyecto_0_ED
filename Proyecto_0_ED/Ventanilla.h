@@ -32,13 +32,15 @@ private:
     string codigoVentanilla;     
     Tiquete tiqueteActual; 
     time_t segundos;
-    tm horaAtencion;              
+    tm horaAtencion;
+    time_t horaEsperaTiquete;
 
 public:
     Ventanilla() : codigoVentanilla(""), tiqueteActual() {
         // Inicializar horaAtencion a cero
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
         segundos = 0;
+        horaEsperaTiquete = 0;
     }
 
     Ventanilla(const string& areaCode, int numeroVentanilla) 
@@ -46,14 +48,18 @@ public:
           tiqueteActual() {
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
         segundos = 0;
+        horaEsperaTiquete = 0;
     }
 
     bool operator ==(const Ventanilla& other) {
         return this->codigoVentanilla == other.codigoVentanilla
             && this->tiqueteActual == other.tiqueteActual
-            && this->segundos == other.segundos;
+            && this->segundos == other.segundos
+            && this->horaEsperaTiquete == other.horaEsperaTiquete;
     }
     
+    string getCode() { return codigoVentanilla; }
+    Tiquete getTicket() { return tiqueteActual; }
     
     // atender un tiquete
     void atenderTiquete(PriorityQueue<Tiquete>& colaPrioridad) {
@@ -91,6 +97,19 @@ public:
 
     void borrarTiquete() {
         this->tiqueteActual = Tiquete();
+    }
+
+    tm calcularEspera(time_t horaTiquete) {
+        horaEsperaTiquete = segundos - horaTiquete;
+        tm utcTime;
+        gmtime_s(&utcTime, &horaEsperaTiquete);
+
+        return utcTime;
+
+        //cout << "Hours: " << utcTime.tm_hour << ", Minutes: " << utcTime.tm_min
+          //  << ", Seconds: " << utcTime.tm_sec << "\n";
+
+
     }
 
     // Imprimir la ventanilla

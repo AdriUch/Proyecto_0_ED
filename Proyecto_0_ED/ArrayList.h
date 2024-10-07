@@ -227,18 +227,9 @@ public:
 	}
 	// Imprime la lista
 	void print() {
-		cout << "[ ";
 		for (int i = 0; i < size; i++) {
-			if (i == pos) {
-				cout << "*";
-			}
-			cout << elements[i] << " ";
+			cout << "		" << elements[i] << endl;
 		}
-		if (pos == size) {
-			cout << "*";
-		}
-		cout << "]" << endl;
-		cout << " " << endl;
 	}
 };
 

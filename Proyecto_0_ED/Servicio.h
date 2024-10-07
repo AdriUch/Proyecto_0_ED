@@ -61,10 +61,7 @@ public:
 
     
     friend ostream& operator <<(ostream& os, const Servicio& servicioInfo) {
-        os << "Descripción: " << servicioInfo.descripcion 
-           << ", Prioridad: " << servicioInfo.prioridadServicio 
-           << ", Área: " << servicioInfo.areaCode 
-           << ", Contador de Tiquetes: " << servicioInfo.contadorTiquetes;
+        os << servicioInfo.descripcion;
         return os;
     }
 };

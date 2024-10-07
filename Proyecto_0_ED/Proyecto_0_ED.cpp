@@ -426,38 +426,64 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 				}
 				//Modifica algún área ya existente
 				else if (listMenu->getElement() == "Modificar cantidad de ventanillas") {
-					// Se selecciona área
-					int areaIndex = areaSelection(areas);
-					areas.goToPos(areaIndex);
-					Area selectedArea = areas.getElement();
-					//Cambia la cantidad de ventanillas
-						int nuevaCantidad;
-						cout << endl << "Cantidad actual: " 
-							<< selectedArea.getCantidadVentanillas() << endl;
-						while (true) {
-							cout << "Ingrese la nueva cantidad: ";
-							cin >> nuevaCantidad;
+					string confirm;
+					while (true) {
+						cout << "¿Desea modificar la cantidad de ventanillas?" << endl
+							<< "Tome en cuenta que también se borrarán todas las actuales y se perderá"
+							<< endl << "Estos son los servicios que se van a borrar: " << endl;
+						cout << endl << "toda su información. Escriba S/s si desea continuar y N/n si no: ";
+						cin >> confirm;
 
-							if (cin.fail() || nuevaCantidad <= 0) {
-								cin.clear();
-								cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-								cout << "* Por favor, ingrese un numero valido *" << endl;
+						if (confirm == "s" || confirm == "S") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							// Se selecciona área
+							int areaIndex = areaSelection(areas);
+							areas.goToPos(areaIndex);
+							Area selectedArea = areas.getElement();
+							//Cambia la cantidad de ventanillas
+							int nuevaCantidad;
+							cout << endl << "Cantidad actual: "
+								<< selectedArea.getCantidadVentanillas() << endl;
+							while (true) {
+								cout << "Ingrese la nueva cantidad: ";
+								cin >> nuevaCantidad;
+
+								if (cin.fail() || nuevaCantidad <= 0) {
+									cin.clear();
+									cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+									cout << "* Por favor, ingrese un numero valido *" << endl;
+								}
+								else {
+									cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+									break;
+								}
 							}
-							else {
-								cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-								break;
+							selectedArea.modificarVentanillas(nuevaCantidad);
+							while (!selectedArea.getListaVentanillas().atEnd()) {
+								selectedArea.getListaVentanillas().remove();
 							}
+							for (int i = 0; i < nuevaCantidad; i++) {
+								Ventanilla newVentanilla(selectedArea.getCodigo(), i + 1);
+								selectedArea.getListaVentanillas().append(newVentanilla);
+							}
+							areas.setElement(selectedArea);
+							cout << endl << "* Accion realizada con exito *" << endl;
+							system("pause");
+							break;
 						}
-						selectedArea.modificarVentanillas(nuevaCantidad);
-						while (!selectedArea.getListaVentanillas().atEnd()) {
-							selectedArea.getListaVentanillas().remove();
+						if (confirm == "n" || confirm == "N") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << endl << "* Accion abandonada *" << endl;
+							system("pause");
+							break;
 						}
-						for (int i = 0; i < nuevaCantidad; i++) {
-							Ventanilla newVentanilla(selectedArea.getCodigo(), i + 1);
-							selectedArea.getListaVentanillas().append(newVentanilla);
+						else {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un valor válido *" << endl;
 						}
-						areas.setElement(selectedArea);
-						cout << "* Cantidad de ventanillas modificada con exito *" << endl;
+					}
+					continue;
 				}
 				//Eliminar el área seleccionada
 				else if (listMenu->getElement() == "Eliminar") {
@@ -932,46 +958,100 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList
 	int currentSelection = 0;
 
 	while (true) {
-		system("cls");
-		cout << "* * * Menú Principal * * *" << endl;
-		mostrarMenu(currentSelection, listMenu, menuSize);
-
-		int key = _getch();
-		currentSelection = keysMenu(key, currentSelection, menuSize);
-
-		if (key == 13) { // Enter
+		try {
 			system("cls");
-			listMenu->goToPos(currentSelection);
-			// Impresión de áreas y ventanillas
-			if (listMenu->getElement() == "Estado de las colas") {
-				cout << "estoy aqui, wooo";
-			}
-			// Opciones de manejo de tiquetes
-			if (listMenu->getElement() == "Tiquetes") {
-				bool tiquetesMenu = menuTiquetes(userList, serviceList, areas);
-				if (!tiquetesMenu) {
-					continue;
+			cout << "* * * Menú Principal * * *" << endl;
+			mostrarMenu(currentSelection, listMenu, menuSize);
+
+			int key = _getch();
+			currentSelection = keysMenu(key, currentSelection, menuSize);
+
+			if (key == 13) { // Enter
+				system("cls");
+				listMenu->goToPos(currentSelection);
+				// Impresión de áreas y ventanillas
+				if (listMenu->getElement() == "Estado de las colas") {
+					if (areas.isEmpty()) {
+						throw runtime_error("* No hay Areas disponibles *");
+					}
+					system("cls");
+					areas.goToStart();
+					for (int i = 0; i < areas.getSize(); i++) {
+						Area currentA = areas.getElement();
+						// Se imprimen datos del área actual
+						cout << "Area: " << currentA.getTituloArea() << "  |  "
+							<< "Codigo: " << currentA.getCodigo() << endl;
+						// Se imprime su cola de tiquetes
+						cout << endl << "	* Cola de Tiquetes *" << endl;
+						cout << endl << "	- - Inicio de cola - -" << endl << endl;
+						// Se crea una lista de tiquetes para que se impriman en orden
+						List<Tiquete>* listTickets = 
+							new ArrayList<Tiquete>(currentA.getColaTiquetes().getSize());
+						while (!currentA.getColaTiquetes().isEmpty()) {
+							listTickets->append(currentA.getColaTiquetes().removeMin());
+						}
+						for (int i = 0; i < listTickets->getSize(); i++) {
+							Tiquete currentT = listTickets->getElement();
+							cout << "	" << currentT.getCode() << endl;
+							listTickets->next();
+						}
+						cout << endl << "	- - Final de cola - -" << endl;
+						listTickets->goToStart();
+						// La lista se vuelve a pasar a la cola
+						while (!listTickets->isEmpty()) {
+							Tiquete ticket = listTickets->remove();
+							currentA.getColaTiquetes().insert(ticket, ticket.getFinalPriority());
+						}
+
+						delete listTickets;
+
+						// Se imprimen sus ventanillas
+						cout << endl << "		* Ventanillas *" << endl << endl;
+						currentA.getListaVentanillas().goToStart();
+						for (int i = 0; i < currentA.getListaVentanillas().getSize(); i++) {
+							Ventanilla currentV = currentA.getListaVentanillas().getElement();
+							// Se imprimen datos de la ventanilla actual
+							cout << "		Ventanilla: " << currentV.getCode() << endl;
+							cout << "			Último Tiquete Atendido: " 
+								<< currentV.getTicket().getCode() << endl;
+							currentA.getListaVentanillas().next();
+						}
+						areas.next();
+
+					}
+					cout << endl;
 				}
-			}
-			// Se atiende el siguiente tiquete
-			if (listMenu->getElement() == "Atender") {
-				cout << "estoy aqui, wooo";
-			}
-			// Opciones para usuarios, áreas y servicios
-			if (listMenu->getElement() == "Administración") {
-				bool adminMenu = menuAdmin(userList, serviceList, areas);
-				if (!adminMenu) {
-					continue;
+				// Opciones de manejo de tiquetes
+				if (listMenu->getElement() == "Tiquetes") {
+					bool tiquetesMenu = menuTiquetes(userList, serviceList, areas);
+					if (!tiquetesMenu) {
+						continue;
+					}
 				}
+				// Se atiende el siguiente tiquete
+				if (listMenu->getElement() == "Atender") {
+					cout << "estoy aqui, wooo";
+				}
+				// Opciones para usuarios, áreas y servicios
+				if (listMenu->getElement() == "Administración") {
+					bool adminMenu = menuAdmin(userList, serviceList, areas);
+					if (!adminMenu) {
+						continue;
+					}
+				}
+				// Consulta de ciertas estadísticas
+				if (listMenu->getElement() == "Estadísticas del sistema") {
+					cout << "estoy aqui, wooo";
+				}
+				if (currentSelection == menuSize - 1) {
+					delete listMenu;
+					break;
+				}
+				system("pause");
 			}
-			// Consulta de ciertas estadísticas
-			if (listMenu->getElement() == "Estadísticas del sistema") {
-				cout << "estoy aqui, wooo";
-			}
-			if (currentSelection == menuSize - 1) {
-				delete listMenu;
-				break;
-			}
+		}
+		catch (const runtime_error& errorDetectado) {
+			std::cerr << "Error: " << errorDetectado.what() << endl;
 			system("pause");
 		}
 	}

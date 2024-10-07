@@ -146,16 +146,9 @@ public:
 		return size;
 	}
 	void print() {
-		int temp = 0;
 		for (int i = 0; i < size; i++) {
-			if (i == temp) {
-    			cout << (i != 0? "]" : "") << "\n[ ";
-				temp = temp * 2 + 1;
-			}
-			cout << elements[i] << " ";
+			cout << "	" << elements[i] << endl;
 		}
-
-		cout << "]\n";
 	}
 };
 
