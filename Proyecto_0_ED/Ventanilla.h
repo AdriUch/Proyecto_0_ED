@@ -30,28 +30,32 @@ using std::runtime_error;
 class Ventanilla {
 private:
     string codigoVentanilla;     
-    string tiqueteActual;         
+    Tiquete tiqueteActual; 
+    time_t segundos;
     tm horaAtencion;              
 
 public:
-    Ventanilla() : codigoVentanilla(""), tiqueteActual("N/A") {
+    Ventanilla() : codigoVentanilla(""), tiqueteActual() {
         // Inicializar horaAtencion a cero
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
+        segundos = 0;
     }
 
     Ventanilla(const string& areaCode, int numeroVentanilla) 
         : codigoVentanilla(areaCode + std::to_string(numeroVentanilla)), 
-          tiqueteActual("N/A") {
+          tiqueteActual() {
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
+        segundos = 0;
     }
 
     bool operator ==(const Ventanilla& other) {
         return this->codigoVentanilla == other.codigoVentanilla
-            && this->tiqueteActual == other.tiqueteActual;
+            && this->tiqueteActual == other.tiqueteActual
+            && this->segundos == other.segundos;
     }
     
     
-    // atiender un tiquete
+    // atender un tiquete
     void atenderTiquete(PriorityQueue<Tiquete>& colaPrioridad) {
         if (colaPrioridad.isEmpty()) {
             throw runtime_error("No hay tiquetes en la cola de prioridad.");
@@ -59,7 +63,7 @@ public:
 
         // Tiquete con mayor prioridad
         Tiquete tiqueteAtendido = colaPrioridad.removeMin();
-        this->tiqueteActual = tiqueteAtendido.getCode();
+        this->tiqueteActual = tiqueteAtendido;
 
    
         time_t tiempoActual = time(0);
@@ -74,6 +78,7 @@ public:
         tm gmtMinus6Time;
         gmtime_s(&gmtMinus6Time, &gmt_minus_6);
 
+        this->segundos = tiempoActual;
         this->horaAtencion = gmtMinus6Time; // Guardar hora de atención ajustada
 
         // Tiquete atendido
@@ -84,11 +89,14 @@ public:
                   << (horaAtencion.tm_sec < 10 ? "0" : "") << horaAtencion.tm_sec << "\n";
     }
 
+    void borrarTiquete() {
+        this->tiqueteActual = Tiquete();
+    }
+
     // Imprimir la ventanilla
     friend ostream& operator<<(ostream& os, const Ventanilla& ventanillaInfo) {
         os << "Ventanilla: " << ventanillaInfo.codigoVentanilla 
-           << " | Tiquete Actual: " << ventanillaInfo.tiqueteActual;
+           << " | Tiquete Actual: " << endl << ventanillaInfo.tiqueteActual;
         return os;
     }
 };
-;

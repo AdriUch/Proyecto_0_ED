@@ -30,7 +30,15 @@ public:
 	int prioridadServicio;
 	int prioridadFinal;
 
-	Tiquete() {}
+	Tiquete() {
+		areaCode = "";
+		code = "";
+		segundos = 0;
+		std::memset(&horaCreation, 0, sizeof(horaCreation));
+		prioridadUser = 0;
+		prioridadServicio = 0;
+		prioridadFinal = 0;
+	}
 	Tiquete(int prioridadUser, int prioridadServicio, string areaCode, string numGlobal) {
 		this->areaCode = areaCode; 
 		this->code = this->areaCode + numGlobal;

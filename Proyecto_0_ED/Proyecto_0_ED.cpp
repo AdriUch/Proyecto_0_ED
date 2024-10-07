@@ -403,7 +403,7 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 						cout << "Ingrese la cantidad de ventanillas: ";
 						cin >> cantidadVentanillas;
 
-						if (cin.fail()) {
+						if (cin.fail() || cantidadVentanillas <= 0) {
 							cin.clear();
 							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							cout << "* Por favor, ingrese un numero valido *" << endl;
@@ -415,6 +415,11 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 					}
 					// Crear una nueva área usando el constructor adecuado
 					Area nuevaArea(titulo, codigo, cantidadVentanillas);
+					// Crear las ventanillas
+					for (int i = 0; i < cantidadVentanillas; i++) {
+						Ventanilla newVentanilla(codigo, i+1);
+						nuevaArea.getListaVentanillas().append(newVentanilla);
+					}
 					areas.append(nuevaArea);
 
 					cout << "* Area agregada con exito *" << endl;
@@ -433,7 +438,7 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 							cout << "Ingrese la nueva cantidad: ";
 							cin >> nuevaCantidad;
 
-							if (cin.fail()) {
+							if (cin.fail() || nuevaCantidad <= 0) {
 								cin.clear();
 								cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 								cout << "* Por favor, ingrese un numero valido *" << endl;
@@ -444,6 +449,13 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 							}
 						}
 						selectedArea.modificarVentanillas(nuevaCantidad);
+						while (!selectedArea.getListaVentanillas().atEnd()) {
+							selectedArea.getListaVentanillas().remove();
+						}
+						for (int i = 0; i < nuevaCantidad; i++) {
+							Ventanilla newVentanilla(selectedArea.getCodigo(), i + 1);
+							selectedArea.getListaVentanillas().append(newVentanilla);
+						}
 						areas.setElement(selectedArea);
 						cout << "* Cantidad de ventanillas modificada con exito *" << endl;
 				}
@@ -675,48 +687,97 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 	listMenu->append("Regresar");
 	int currentSelection = 0;
 	
-	// Manejo de las teclas del menú
-	while (true) {
-		system("cls");
-		cout << "* * * Menu de Administracion * * *" << endl;
-		mostrarMenu(currentSelection, listMenu, menuSize);
-
-		int key = _getch();
-		currentSelection = keysMenu(key, currentSelection, menuSize);
-
-		if (key == 13) { // Enter
+	try {
+		// Manejo de las teclas del menú
+		while (true) {
 			system("cls");
-			listMenu->goToPos(currentSelection);
-			// Agregar/Eliminar usuario
-			if (listMenu->getElement() == "Tipo de Usuario") {
-				bool tipoUsuariosMenu = menuTipoUsuarios(userList, areas);
-				if (!tipoUsuariosMenu) {
-					continue;
+			cout << "* * * Menu de Administracion * * *" << endl;
+			mostrarMenu(currentSelection, listMenu, menuSize);
+
+			int key = _getch();
+			currentSelection = keysMenu(key, currentSelection, menuSize);
+
+			if (key == 13) { // Enter
+				system("cls");
+				listMenu->goToPos(currentSelection);
+				// Agregar/Eliminar usuario
+				if (listMenu->getElement() == "Tipo de Usuario") {
+					bool tipoUsuariosMenu = menuTipoUsuarios(userList, areas);
+					if (!tipoUsuariosMenu) {
+						continue;
+					}
 				}
-			}
-			// Agregar/ Eliminar áreas y modificar cantidad de ventanillas
-			if (listMenu->getElement() == "Areas") {
-				bool areasMenu = menuAreas(areas, serviceList);
-				if (!areasMenu) {
-					continue;
+				// Agregar/ Eliminar áreas y modificar cantidad de ventanillas
+				if (listMenu->getElement() == "Areas") {
+					bool areasMenu = menuAreas(areas, serviceList);
+					if (!areasMenu) {
+						continue;
+					}
 				}
-			}
-			// Agregar/Eliminar/Reordenar servicio
-			if (listMenu->getElement() == "Servicios disponibles") {
-				bool serviciosMenu = menuServicios(serviceList, areas);
-				if (!serviciosMenu) {
-					continue;
+				// Agregar/Eliminar/Reordenar servicio
+				if (listMenu->getElement() == "Servicios disponibles") {
+					bool serviciosMenu = menuServicios(serviceList, areas);
+					if (!serviciosMenu) {
+						continue;
+					}
 				}
+				if (listMenu->getElement() == "Limpiar Colas y Estadisticas") {
+					string confirm;
+					while (true) {
+						cout << "¿Desea limpiar las colas y estadisticas?" << endl
+							<< "Tome en cuenta que también se borrarán todos los tiquetes creados y los atendidos"
+							<< endl << "Escriba S/s si desea continuar y N/n si no: ";
+						cin >> confirm;
+
+						if (areas.isEmpty()) {
+							throw runtime_error("No hay Areas disponibles");
+						}
+						if (confirm == "s" || confirm == "S") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							// Se borran las colas de tiquetes
+							removeTickets(areas);
+							// Se eliminan los tiquetes atendidos en las ventanillas
+							areas.goToStart();
+							while (!areas.atEnd()) {
+								Area currentArea = areas.getElement();
+								if (!currentArea.getListaVentanillas().isEmpty()) {
+									while (!currentArea.getListaVentanillas().atEnd()) {
+										Ventanilla currentVentanilla = currentArea.getListaVentanillas().getElement();
+										currentVentanilla.borrarTiquete();
+										currentArea.getListaVentanillas().setElement(currentVentanilla);
+										currentArea.getListaVentanillas().next();
+									}
+								}
+								areas.setElement(currentArea);
+								areas.next();
+							}
+							cout << endl << "* Accion realizada con exito *" << endl;
+							break;
+						}
+						if (confirm == "n" || confirm == "N") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+						else {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un valor válido *" << endl;
+						}
+					}
+				}
+				if (currentSelection == menuSize - 1) {
+					delete listMenu;
+					return false;
+				}
+				system("pause");
 			}
-			if (listMenu->getElement() == "Limpiar Colas y Estadisticas") {
-				cout << "estoy aqui, wooo" << endl;
-			}
-			if (currentSelection == menuSize - 1) {
-				delete listMenu;
-				return false;
-			}
-			system("pause");
 		}
+	}
+	catch (const runtime_error& errorDetectado) {
+		std::cerr << "Error: " << errorDetectado.what() << endl;
+		system("pause");
+		delete listMenu;
+		return false;
 	}
 }
 // - - - - - FIN MENÚS ADMINISTRACIÓN - - - - -

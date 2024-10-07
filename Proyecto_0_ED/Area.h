@@ -129,10 +129,11 @@ public:
 
     friend ostream& operator <<(ostream& os, const Area& areaInfo) {
         os << "Area: " << areaInfo.tituloArea << " | Codigo: "
-            << areaInfo.codigo << " | Ventanillas: "
-            << areaInfo.cantidadVentanillas << endl
-            << "Cola de Tiquetes" << endl;
-        areaInfo.colaTiquetes->print();
+           << areaInfo.codigo << " | Ventanillas: "
+           << areaInfo.cantidadVentanillas << endl;
+            areaInfo.listaVentanillas->print();
+       os << "Cola de Tiquetes:" << endl;
+            areaInfo.colaTiquetes->print();
         return os;
     }
 };
