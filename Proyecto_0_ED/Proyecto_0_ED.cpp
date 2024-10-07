@@ -96,7 +96,7 @@ int seleccionServicio(List<Servicio>* serviceList) {
 	bool continueCycle = true;
 	while (continueCycle) {
 		system("cls");
-		cout << "* * * Seleccion de Borrado de Servicios * * *" << endl;
+		cout << "* * * Seleccion de Servicios * * *" << endl;
 
 		// Mostrar el menú con la lista de áreas usando `mostrarMenu`
 		mostrarMenu(currentSelection, serviceList, menuSize);
@@ -124,7 +124,7 @@ Area selectionArea(ArrayList<Area>& areas) {
 
 	while (true) {
 		system("cls");
-		cout << "* * * Seleccione el área que desea * * *" << endl;
+		cout << "* * * Seleccion de Area * * *" << endl;
 
 		// Mostrar el menú con la lista de áreas usando `mostrarMenu`
 		mostrarMenu(currentSelection, &areas, menuSize);
@@ -345,7 +345,7 @@ int areaSelection(ArrayList<Area>& areas) {
 	bool continueCycle = true;
 	while (continueCycle) {
 		system("cls");
-		cout << "* * * Seleccion de Borrado de Areas * * *" << endl;
+		cout << "* * * Seleccion de Areas * * *" << endl;
 
 		// Mostrar el menú con la lista de áreas usando `mostrarMenu`
 		mostrarMenu(currentSelection, &areas, menuSize);
@@ -421,14 +421,14 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 				}
 				//Modifica algún área ya existente
 				else if (listMenu->getElement() == "Modificar cantidad de ventanillas") {
-					int areaIndex;
-					cout << "Ingrese el indice del area a modificar: ";
-					cin >> areaIndex;
-
+					// Se selecciona área
+					int areaIndex = areaSelection(areas);
+					areas.goToPos(areaIndex);
+					Area selectedArea = areas.getElement();
 					//Cambia la cantidad de ventanillas
-					if (areaIndex >= 0 && areaIndex < areas.getSize()) {
 						int nuevaCantidad;
-						cout << "Cantidad actual: " << areas.getElement().getCantidadVentanillas() << endl;
+						cout << endl << "Cantidad actual: " 
+							<< selectedArea.getCantidadVentanillas() << endl;
 						while (true) {
 							cout << "Ingrese la nueva cantidad: ";
 							cin >> nuevaCantidad;
@@ -443,12 +443,9 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 								break;
 							}
 						}
-						areas.getElement().modificarVentanillas(nuevaCantidad);
+						selectedArea.modificarVentanillas(nuevaCantidad);
+						areas.setElement(selectedArea);
 						cout << "* Cantidad de ventanillas modificada con exito *" << endl;
-					}
-					else {
-						cout << "Indice no valido." << endl;
-					}
 				}
 				//Eliminar el área seleccionada
 				else if (listMenu->getElement() == "Eliminar") {
