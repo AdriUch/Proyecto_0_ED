@@ -75,6 +75,17 @@ int keysMenu(int key, int currentSelection, int menuSize) {
 }
 // - - - - -  - - - - - FIN MANEJO MENÚS - - - - - - - - - -
 
+bool removeTickets(ArrayList<Area>& areas) {
+	areas.goToStart();
+	while (!areas.atEnd()) {
+		Area currentArea = areas.getElement();
+		currentArea.getColaTiquetes().clear();
+		areas.setElement(currentArea);
+		areas.next();
+	}
+	return false;
+}
+
 // - - - - - MENÚS ADMINISTRACIÓN - - - - -
 
 // Función para seleccionar un área desde la lista de áreas disponibles
@@ -98,19 +109,16 @@ Area selectionArea(ArrayList<Area>& areas) {
 	}
 }
 
-
-
 bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
+	// Opciones del menú
+	const int menuSize = 4;
+	List<string>* listMenu = new ArrayList<string>(menuSize);
+	listMenu->append("Agregar");
+	listMenu->append("Eliminar");
+	listMenu->append("Reordenar");
+	listMenu->append("Regresar");
+	int currentSelection = 0;
 	try {
-		// Opciones del menú
-		const int menuSize = 4;
-		List<string>* listMenu = new ArrayList<string>(menuSize);
-		listMenu->append("Agregar");
-		listMenu->append("Eliminar");
-		listMenu->append("Reordenar");
-		listMenu->append("Regresar");
-		int currentSelection = 0;
-
 		// Manejo de teclas presionadas en el menú
 		while (true) {
 			system("cls");
@@ -220,24 +228,66 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 	catch (const runtime_error& errorDetectado) {
 		std::cerr << "Error: " << errorDetectado.what() << endl;
 		system("pause");
+		delete listMenu;
 		return false;
 	}
 }
 
+void serviceElimination(ArrayList<Area>& areas, int currentAreaIndex,
+						List<Servicio>* serviceList) {
+	serviceList->goToStart();
+	areas.goToPos(currentAreaIndex);
+	Area selectedArea = areas.getElement();
+	while (!serviceList->atEnd()) {
+		Servicio currentService = serviceList->getElement();
+		if (currentService.getAreaCode() == selectedArea.getCodigo()) {
+			serviceList->remove();
+		}
+		else {
+			serviceList->next();
+		}
+	}
+}
 
+int areaSelection(ArrayList<Area>& areas) {
+	int menuSize = areas.getSize();
+	int currentSelection = 0;
+	bool continueCycle = true;
+	while (continueCycle) {
+		system("cls");
+		cout << "* * * Seleccion de Borrado de Areas * * *" << endl;
+
+		// Mostrar el menú con la lista de áreas usando `mostrarMenu`
+		mostrarMenu(currentSelection, &areas, menuSize);
+
+		int key = _getch();
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
+			continueCycle = false;
+		}
+	}
+	return currentSelection;
+}
+
+bool areaElimination(ArrayList<Area>& areas, int currentSelection) {
+	areas.goToPos(currentSelection);
+	areas.remove();
+	return false;
+}
 
 // Sub-menú de Admin. Realiza las operaciones de las áreas
-bool menuAreas(ArrayList<Area>& areas) {
+bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 	
+	int totalArea = areas.getSize();
+	const int menuSize = 4;
+	List<string>* listMenu = new ArrayList<string>(menuSize);
+	listMenu->append("Agregar");
+	listMenu->append("Modificar cantidad de ventanillas");
+	listMenu->append("Eliminar");
+	listMenu->append("Regresar");
+	int currentSelection = 0;
 	try {
-		int totalArea = areas.getSize();
-		const int menuSize = 4;
-		List<string>* listMenu = new ArrayList<string>(menuSize);
-		listMenu->append("Agregar");
-		listMenu->append("Modificar cantidad de ventanillas");
-		listMenu->append("Eliminar");
-		listMenu->append("Regresar");
-		int currentSelection = 0;
 
 		while (true) {
 			system("cls");
@@ -312,33 +362,53 @@ bool menuAreas(ArrayList<Area>& areas) {
 				}
 				//Eliminar el área seleccionada
 				else if (listMenu->getElement() == "Eliminar") {
-					int areaIndex;
+					// Si las cola de usuarios está vacía
+					if (areas.getSize() == 0) {
+						throw runtime_error("* No hay Areas disponibles *");
+						continue;
+					}
+					int selectedIndex = areaSelection(areas);
+					string confirm;
 					while (true) {
-						cout << "Ingrese el indice del area a eliminar: ";
-						cin >> areaIndex;
-
-						if (cin.fail()) {
-							cin.clear();
-							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-							cout << "* Por favor, ingrese un numero valido *" << endl;
+						cout << "¿Desea borrar esta area?" << endl
+							<< "Tome en cuenta que también se borrarán todos los servicios y tiquetes asociados a esta"
+							<< endl << "Estos son los servicios que se van a borrar: " << endl;
+						// Mostar lista de servicios
+						serviceList->goToStart();
+						areas.goToPos(selectedIndex);
+						Area selectedArea = areas.getElement();
+						while (!serviceList->atEnd()) {
+							Servicio currentService = serviceList->getElement();
+							if (currentService.getAreaCode() == selectedArea.getCodigo()) {
+								cout << currentService.getDescripcion() << endl;
+							}
+							serviceList->next();
 						}
-						else {
-							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						cout << endl << "Escriba S/s si desea continuar y N/n si no: ";
+						cin >> confirm;
+
+						if (confirm == "s" || confirm == "S") {
+							// Se borra el área
+							areaElimination(areas, selectedIndex);
+							// Se borran los servicios
+							serviceElimination(areas, selectedIndex, serviceList);
+							cout << endl << "* Accion realizada con exito *" << endl;
+							system("pause");
 							break;
 						}
-					}
-					if (areaIndex >= 0 && areaIndex < areas.getSize()) {
-						string confirm;
-						cout << "Seguro que desea eliminar esta area? (s/n): ";
-						cin >> confirm;
-						if (confirm == "s" || confirm == "S") {
-							Area::eliminarArea(areas.getArray(), totalArea, areaIndex);
-							cout << "* Area eliminada con exito *" << endl;
+						if (confirm == "n" || confirm == "N") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << endl << "* Accion abandonada *" << endl;
+							system("pause");
+							break;
+						}
+						else {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un valor válido *" << endl;
 						}
 					}
-					else {
-						cout << "Indice no valido." << endl;
-					}
+					continue;
 				}
 				if (currentSelection == menuSize - 1) {
 					delete listMenu;
@@ -351,16 +421,53 @@ bool menuAreas(ArrayList<Area>& areas) {
 	catch (const runtime_error& errorDetectado) {
 		std::cerr << "Error: " << errorDetectado.what() << endl;
 		system("pause");
+		delete listMenu;
 		return false;
 	}
 }
 
-//Usuario userElimination() {
+bool userElimination(PriorityQueue<Usuario>* userList) {
+	int menuSize = userList->getSize();
+	int currentSelection = 0;
+	List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
+	int prioridadUser = 0;
 
-//}
+		while (!userList->isEmpty()) {
+			arrayListUsers->append(userList->removeMin());
+		}
+		bool continueCycle = true;
+		while (continueCycle) {
+			system("cls");
+			cout << "* * * Seleccion de Borrado de Usuario * * *" << endl;
+
+			// Mostrar el menú de usuarios
+			mostrarMenu(currentSelection, arrayListUsers, menuSize);
+
+			int key = _getch();
+			currentSelection = keysMenu(key, currentSelection, menuSize);
+
+			if (key == 13) { // Enter
+				
+				// Seleccionar el usuario
+				arrayListUsers->goToPos(currentSelection);
+
+				// Se borra el usuario
+				arrayListUsers->remove();
+				continueCycle = false;
+			}
+		}
+		arrayListUsers->goToStart();
+		while (!arrayListUsers->isEmpty()) {
+			Usuario user = arrayListUsers->remove();
+			userList->insert(user, user.getPriority());
+		}
+
+		delete arrayListUsers;
+		return false;
+}
 
 // Sub-menú de Admin. Realiza las operaciones de los usuarios.
-bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
+bool menuTipoUsuarios(PriorityQueue<Usuario>* userList, ArrayList<Area>& areas) {
 	// Opciones del menú
 	const int menuSize = 3;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -368,63 +475,103 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList) {
 	listMenu->append("Eliminar");
 	listMenu->append("Regresar");
 	int currentSelection = 0;
-	
-	// Manejo de teclas presionadas en el menú
-	while (true) {
-		system("cls");
-		// Se muestran las opciones del menú
-		cout << "* * * Menu de Usuarios * * *" << endl;
-		mostrarMenu(currentSelection, listMenu, menuSize);
-
-		int key = _getch();
-		currentSelection = keysMenu(key, currentSelection, menuSize);
-
-		if (key == 13) { // Enter
+	try {
+		// Manejo de teclas presionadas en el menú
+		while (true) {
 			system("cls");
-			listMenu->goToPos(currentSelection);
-			if (listMenu->getElement() == "Agregar") {
-				// Se pide al usuario un número y un string
-				string userName;
-				int userPriority;
-				cout << "Ingrese el nombre de usuario que desea agregar: ";
-				getline(cin, userName);
+			// Se muestran las opciones del menú
+			cout << "* * * Menu de Usuarios * * *" << endl;
+			mostrarMenu(currentSelection, listMenu, menuSize);
 
-				while (true) {
-					cout << endl << "Ingrese la prioridad del tipo de usuario: ";
-					cin >> userPriority;
+			int key = _getch();
+			currentSelection = keysMenu(key, currentSelection, menuSize);
 
-					if (cin.fail()) {
-						cin.clear();
-						cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-						cout << "* Por favor, ingrese un numero valido *" << endl;
+			if (key == 13) { // Enter
+				system("cls");
+				listMenu->goToPos(currentSelection);
+				if (listMenu->getElement() == "Agregar") {
+					// Se pide al usuario un número y un string
+					string userName;
+					int userPriority;
+					cout << "Ingrese el nombre de usuario que desea agregar: ";
+					getline(cin, userName);
+
+					while (true) {
+						cout << endl << "Ingrese la prioridad del tipo de usuario: ";
+						cin >> userPriority;
+
+						if (cin.fail()) {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un numero valido *" << endl;
+						}
+						else {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
 					}
-					else {
-						cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-						break;
-					}
+					// Se crea el objeto Usuario y se agrega a la lista
+					Usuario user(userPriority, userName);
+					userList->insert(user, user.getPriority());
+
+					cout << endl << "* Accion realizada con exito *" << endl;
 				}
-				// Se crea el objeto Usuario y se agrega a la lista
-				Usuario user(userPriority, userName);
-				userList->insert(user, user.getPriority());
+				if (listMenu->getElement() == "Eliminar") {
+					// Si las cola de usuarios está vacía
+					if (userList->getSize() == 0) {
+						throw runtime_error("* No hay tipos de Usuarios disponibles *");
+						continue;
+					}
+					string confirm;
+					
+					while (true) {
+						cout << "¿Desea borrar un tipo de usuario?" << endl
+							<< "Tome en cuenta que también se borrarán todos los tiquetes creados"
+							<< endl << "Escriba S/s si desea continuar y N/n si no: ";
+						cin >> confirm;
 
-				cout << endl << "* Accion realizada con exito *" << endl;
+						if (confirm == "s" || confirm == "S") {
+							// Se borra el usuario
+							userElimination(userList);
+							// Se borran los tiquetes
+							removeTickets(areas);
+							break;
+						}
+						if (confirm == "n" || confirm == "N") {
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+						else {
+							cin.clear();
+							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << "* Por favor, ingrese un valor válido *" << endl;
+						}
+					}
+					cout << endl << "* Accion realizada con exito *" << endl;
+					system("pause");
+					continue;
+				}
+				// Opción de regresar
+				if (currentSelection == menuSize - 1) {
+					delete listMenu;
+					return false;
+				}
+				system("pause");
 			}
-			if (listMenu->getElement() == "Eliminar") {
-				cout << "estoy aqui, wooo" << endl;
-			}
-			// Opción de regresar
-			if (currentSelection == menuSize - 1) {
-				delete listMenu;
-				return false;
-			}
-			system("pause");
 		}
+	}
+	catch (const runtime_error& errorDetectado) {
+		std::cerr << "Error: " << errorDetectado.what() << endl;
+		system("pause");
+		delete listMenu;
+		return false;
 	}
 }
 
 // MENÚ ADMINISTRACIÓN. Sub-menú del principal. Se encarga
 // de dar opciones para listas o colas de usuarios, áreas y servicios
-bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList, ArrayList<Area>& areas) {
+bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
+				ArrayList<Area>& areas) {
 	// Opciones del menú
 	const int menuSize = 5;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -449,14 +596,14 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList, Ar
 			listMenu->goToPos(currentSelection);
 			// Agregar/Eliminar usuario
 			if (listMenu->getElement() == "Tipo de Usuario") {
-				bool tipoUsuariosMenu = menuTipoUsuarios(userList);
+				bool tipoUsuariosMenu = menuTipoUsuarios(userList, areas);
 				if (!tipoUsuariosMenu) {
 					continue;
 				}
 			}
 			// Agregar/ Eliminar áreas y modificar cantidad de ventanillas
 			if (listMenu->getElement() == "Areas") {
-				bool areasMenu = menuAreas(areas);
+				bool areasMenu = menuAreas(areas, serviceList);
 				if (!areasMenu) {
 					continue;
 				}
@@ -517,9 +664,6 @@ Servicio selectionService(List<Servicio>* serviceList) {
 bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 						ArrayList<Area>& areas) {
 	try {
-		List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
-		int prioridadUser = 0;
-
 		// Si las listas de usuario y servicios están vacías
 		if (userList->getSize() == 0) {
 			throw runtime_error("* No hay tipos de Usuarios disponibles *");
@@ -527,6 +671,9 @@ bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* service
 		if (serviceList->getSize() == 0) {
 			throw runtime_error("* No hay servicios disponibles *");
 		}
+
+		List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
+		int prioridadUser = 0;
 
 		while (!userList->isEmpty()) {
 			arrayListUsers->append(userList->removeMin());
