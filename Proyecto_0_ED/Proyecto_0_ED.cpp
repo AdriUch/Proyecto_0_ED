@@ -755,7 +755,8 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 					string confirm;
 					while (true) {
 						cout << "¿Desea limpiar las colas y estadisticas?" << endl
-							<< "Tome en cuenta que también se borrarán todos los tiquetes creados y los atendidos"
+							<< "Tome en cuenta que se borrarán todos los tiquetes creados y los atendidos."
+							<< endl << "Además, se van eliminar todos los datos guardados en las estadísticas."
 							<< endl << "Escriba S/s si desea continuar y N/n si no: ";
 						cin >> confirm;
 
@@ -774,13 +775,46 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 									while (!currentArea.getListaVentanillas().atEnd()) {
 										Ventanilla currentVentanilla = currentArea.getListaVentanillas().getElement();
 										currentVentanilla.borrarTiquete();
+										currentVentanilla.setContadorTiquetes(0);
+										currentVentanilla.setTiempoTotalEspera(0);
+										currentVentanilla.setTiempoTiquete(0);
 										currentArea.getListaVentanillas().setElement(currentVentanilla);
 										currentArea.getListaVentanillas().next();
 									}
 								}
+								currentArea.setContadorTiquetes(0);
 								areas.setElement(currentArea);
 								areas.next();
 							}
+							serviceList->goToStart();
+							while (!serviceList->atEnd()) {
+								Servicio currentS = serviceList->getElement();
+								currentS.setContadorTiquetes(0);
+								serviceList->setElement(currentS);
+								serviceList->next();
+							}
+							List<Usuario>* listUsers =
+								new ArrayList<Usuario>(userList->getSize());
+							// Se crea una lista de usuarios para que se pueda acceder a todos
+							while (!userList->isEmpty()) {
+								listUsers->append(userList->removeMin());
+							}
+							listUsers->goToStart();
+							for (int i = 0; i < listUsers->getSize(); i++) {
+								Usuario currentU = listUsers->getElement();
+								currentU.resetTicketCounter(0);
+								listUsers->setElement(currentU);
+								listUsers->next();
+							}
+							// La lista se vuelve a pasar a la cola
+							listUsers->goToStart();
+							while (!listUsers->isEmpty()) {
+								Usuario user = listUsers->remove();
+								userList->insert(user, user.getPriority());
+							}
+							cout << endl;
+							delete listUsers;
+
 							cout << endl << "* Accion realizada con exito *" << endl;
 							break;
 						}
@@ -986,31 +1020,37 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList
 					for (int i = 0; i < areas.getSize(); i++) {
 						Area currentA = areas.getElement();
 						// Se imprimen datos del área actual
-						cout << "Area: " << currentA.getTituloArea() << "  |  "
+						cout << endl << "Area: " << currentA.getTituloArea() << "  |  "
 							<< "Codigo: " << currentA.getCodigo() << endl;
 						// Se imprime su cola de tiquetes
 						cout << endl << "	* Cola de Tiquetes *" << endl;
 						cout << endl << "	- - Inicio de cola - -" << endl << endl;
-						// Se crea una lista de tiquetes para que se impriman en orden
-						List<Tiquete>* listTickets = 
-							new ArrayList<Tiquete>(currentA.getColaTiquetes().getSize());
-						while (!currentA.getColaTiquetes().isEmpty()) {
-							listTickets->append(currentA.getColaTiquetes().removeMin());
-						}
-						for (int i = 0; i < listTickets->getSize(); i++) {
-							Tiquete currentT = listTickets->getElement();
-							cout << "	" << currentT.getCode() << endl;
-							listTickets->next();
-						}
-						cout << endl << "	- - Final de cola - -" << endl;
-						listTickets->goToStart();
-						// La lista se vuelve a pasar a la cola
-						while (!listTickets->isEmpty()) {
-							Tiquete ticket = listTickets->remove();
-							currentA.getColaTiquetes().insert(ticket, ticket.getFinalPriority());
-						}
+						if (currentA.getColaTiquetes().getSize() != 0) {
+							// Se crea una lista de tiquetes para que se impriman en orden
+							List<Tiquete>* listTickets =
+								new ArrayList<Tiquete>(currentA.getColaTiquetes().getSize());
+							while (!currentA.getColaTiquetes().isEmpty()) {
+								listTickets->append(currentA.getColaTiquetes().removeMin());
+							}
+							for (int i = 0; i < listTickets->getSize(); i++) {
+								Tiquete currentT = listTickets->getElement();
+								cout << "	" << currentT.getCode() << endl;
+								listTickets->next();
+							}
+							cout << endl << "	- - Final de cola - -" << endl;
+							listTickets->goToStart();
+							// La lista se vuelve a pasar a la cola
+							while (!listTickets->isEmpty()) {
+								Tiquete ticket = listTickets->remove();
+								currentA.getColaTiquetes().insert(ticket, ticket.getFinalPriority());
+							}
 
-						delete listTickets;
+							delete listTickets;
+						}
+						else {
+							cout << "	* No hay usuarios en espera *" << endl;
+							cout << endl << "	- - Final de cola - -" << endl;
+						}
 
 						// Se imprimen sus ventanillas
 						cout << endl << "		* Ventanillas *" << endl << endl;

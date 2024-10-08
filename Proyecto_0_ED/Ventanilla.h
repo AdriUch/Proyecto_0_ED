@@ -76,6 +76,7 @@ public:
         tiempoTotalEspera = tiempoTotalEspera + horaEsperaTiquete;
     }
     void setContadorTiquetes(int count) { contadorTiquetes = count; }
+    void setTiempoTiquete(int count) { horaEsperaTiquete = count; }
     void setTiempoTotalEspera(int count) { tiempoTotalEspera = count; }
     
     // atender un tiquete

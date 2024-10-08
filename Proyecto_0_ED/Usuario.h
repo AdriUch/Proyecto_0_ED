@@ -75,6 +75,9 @@ public:
 	void setTicketCounter() {
 		contadorTiquetes = contadorTiquetes + 1;
 	}
+	void resetTicketCounter(int count) {
+		contadorTiquetes = 0;
+	}
 };
 
 ostream& operator <<(ostream& os, const Usuario& userInfo) {

@@ -1,3 +1,3 @@
 ﻿  Proyecto_0_ED.cpp
-C:\Users\hidal\OneDrive\Documents\Github\Proyecto_0_ED\Proyecto_0_ED\Proyecto_0_ED.cpp(1064,47): warning C4244: '=': conversion from 'time_t' to 'int', possible loss of data
+C:\Users\hidal\OneDrive\Documents\Github\Proyecto_0_ED\Proyecto_0_ED\Proyecto_0_ED.cpp(1104,47): warning C4244: '=': conversion from 'time_t' to 'int', possible loss of data
   Proyecto_0_ED.vcxproj -> C:\Users\hidal\OneDrive\Documents\Github\Proyecto_0_ED\x64\Debug\Proyecto_0_ED.exe
