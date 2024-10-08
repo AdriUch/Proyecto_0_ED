@@ -980,14 +980,95 @@ bool menuTiquetes(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 		}
 	}
 }
+
+void atenderTiquete(ArrayList<Area>& areas) {
+	// Verificar que haya áreas disponibles
+	if (areas.isEmpty()) {
+		std::cout << "No hay áreas disponibles para atender tiquetes." << std::endl;
+		system("pause");
+		return;
+	}
+
+	// Selección del área
+	int areaIndex = areaSelection(areas);  // Reutilizar la función de selección de área
+	areas.goToPos(areaIndex);
+	Area selectedArea = areas.getElement();
+
+	// Verificar que haya ventanillas disponibles en el área seleccionada
+	if (selectedArea.getListaVentanillas().isEmpty()) {
+		std::cout << "El área seleccionada no tiene ventanillas disponibles." << std::endl;
+		system("pause");
+		return;
+	}
+
+	// Mostrar las ventanillas disponibles y permitir seleccionar una
+	selectedArea.getListaVentanillas().goToStart();
+	std::cout << "* * * Ventanillas disponibles en el área " << selectedArea.getTituloArea() << " * * *" << std::endl;
+	for (int i = 0; i < selectedArea.getListaVentanillas().getSize(); i++) {
+		Ventanilla vent = selectedArea.getListaVentanillas().getElement();
+		std::cout << i + 1 << ". Ventanilla " << vent.getCode() << std::endl;
+		selectedArea.getListaVentanillas().next();
+	}
+
+	int ventanillaIndex;
+	while (true) {
+		std::cout << "Seleccione el número de ventanilla a usar: ";
+		std::cin >> ventanillaIndex;
+
+		if (std::cin.fail() || ventanillaIndex < 1 || ventanillaIndex > selectedArea.getListaVentanillas().getSize()) {
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			std::cout << "* Por favor, ingrese un número de ventanilla válido *" << std::endl;
+		}
+		else {
+			break;
+		}
+	}
+
+	// Acceder a la ventanilla seleccionada
+	selectedArea.getListaVentanillas().goToPos(ventanillaIndex - 1);
+	Ventanilla selectedVentanilla = selectedArea.getListaVentanillas().getElement();
+
+	// Verificar si hay tiquetes en la cola del área seleccionada
+	if (selectedArea.getColaTiquetes().isEmpty()) {
+		std::cout << "No hay usuarios en espera en la cola del área seleccionada." << std::endl;
+	}
+	else {
+		// Asignar el siguiente tiquete de la cola a la ventanilla
+		try {
+			selectedVentanilla.atenderTiquete(selectedArea.getColaTiquetes());  // Utiliza la función de `Ventanilla`
+		}
+		catch (const std::runtime_error& e) {
+			std::cout << "Error: " << e.what() << std::endl;
+		}
+
+		// Actualizar la ventanilla en el área
+		selectedArea.getListaVentanillas().setElement(selectedVentanilla);
+
+		std::cout << "Tiquete atendido exitosamente en la ventanilla seleccionada." << std::endl;
+	}
+
+	// Actualizar el área seleccionada en la lista de áreas
+	areas.setElement(selectedArea);
+	system("pause");
+}
+
 // - - - - - FIN MENÚS TIQUETES - - - - -
 
 // - - - - - MENÚ PRINCIPAL - - - - -
+
+void configurarConsola() {
+	// Configurar la consola para aceptar caracteres UTF-8
+	setlocale(LC_ALL, "es_ES.UTF-8");  // Configurar la localización a español (UTF-8)
+	system("chcp 65001 > nul");        // Cambiar el código de página a UTF-8 en Windows
+	std::locale::global(std::locale("es_ES.UTF-8"));  // Configurar la localización global
+}
 
 // Contiene sub-menús: Estado de Colas, Tiquetes, Atender,
 // Administración y Estadísticas del sistema
 void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 					ArrayList<Area>& areas) {
+	configurarConsola();
 	const int menuSize = 6;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
 	listMenu->append("Estado de las colas");
