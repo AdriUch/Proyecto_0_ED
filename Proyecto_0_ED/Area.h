@@ -32,17 +32,19 @@ private:
     int cantidadVentanillas;
     HeapPriorityQueue<Tiquete>* colaTiquetes;      // cola de tiquetes
     ArrayList<Ventanilla>* listaVentanillas;  // Lista de ventanillas
+    int contadorTiquetes;
 
 public:
     // Constructor base
     Area()
         : tituloArea(""), codigo(""), cantidadVentanillas(0),
         colaTiquetes(new HeapPriorityQueue<Tiquete>()),
-        listaVentanillas(new ArrayList<Ventanilla>()) {}
+        listaVentanillas(new ArrayList<Ventanilla>()),
+        contadorTiquetes(0) {}
 
     // Constructor con par�metros 
     Area(const string& titulo, const string& codigo, int cantidadVentanillas)
-        : tituloArea(titulo), codigo(codigo), cantidadVentanillas(cantidadVentanillas) {
+        : tituloArea(titulo), codigo(codigo), cantidadVentanillas(cantidadVentanillas), contadorTiquetes(0) {
         colaTiquetes = new HeapPriorityQueue<Tiquete>();              // Usar HeapPriorityQueue para cola de tiquetes 
         listaVentanillas = new ArrayList<Ventanilla>(cantidadVentanillas);  // Usar ArrayList para lista de ventanillas 
     }
@@ -55,7 +57,8 @@ public:
 
     //  Constructor de copia
     Area(const Area& other)
-        : tituloArea(other.tituloArea), codigo(other.codigo), cantidadVentanillas(other.cantidadVentanillas) {
+        : tituloArea(other.tituloArea), codigo(other.codigo),
+        cantidadVentanillas(other.cantidadVentanillas), contadorTiquetes(other.contadorTiquetes) {
         // Copiar nuevas listas 
         colaTiquetes = new HeapPriorityQueue<Tiquete>(*other.colaTiquetes);
         listaVentanillas = new ArrayList<Ventanilla>(*other.listaVentanillas);
@@ -65,7 +68,8 @@ public:
         return this->tituloArea == other.tituloArea && this->codigo == other.codigo
             && this->cantidadVentanillas == other.cantidadVentanillas
             && this->colaTiquetes == other.colaTiquetes
-            && this->listaVentanillas == other.listaVentanillas;
+            && this->listaVentanillas == other.listaVentanillas
+            && this->contadorTiquetes == other.contadorTiquetes;
     }
 
     // Operador de asignación. Evita problemas con los "=" de ciertas funciones
@@ -74,6 +78,7 @@ public:
             tituloArea = other.tituloArea;
             codigo = other.codigo;
             cantidadVentanillas = other.cantidadVentanillas;
+            contadorTiquetes = other.contadorTiquetes;
 
             // Limpiar colas y listas 
             if (colaTiquetes != nullptr) {
@@ -93,21 +98,6 @@ public:
         }
         return *this;
     }
-
-    // Método para agregar o modificar un área
-    void agregarArea(const string& titulo, const string& codigo, int cantidadVentanillas, int maxTiquetes, int maxVentanillas) {
-        this->tituloArea = titulo;
-        this->codigo = codigo;
-        this->cantidadVentanillas = cantidadVentanillas;
-
-        // Eliminar listas actuales y crear nuevas
-        delete colaTiquetes;
-        colaTiquetes = new HeapPriorityQueue<Tiquete>();
-
-        delete listaVentanillas;
-        listaVentanillas = new ArrayList<Ventanilla>(maxVentanillas);
-    }
-
     // Método para modificar la cantidad de ventanillas
     void modificarVentanillas(int nuevaCantidad) {
         this->cantidadVentanillas = nuevaCantidad;
@@ -117,6 +107,10 @@ public:
     string getTituloArea() const { return tituloArea; }
     string getCodigo() const { return codigo; }
     int getCantidadVentanillas() const { return cantidadVentanillas; }
+    int getContadorTiquetes() const { return contadorTiquetes; }
+
+    void incrementarContadorTiquetes() { contadorTiquetes++; }
+    void setContadorTiquetes(int count) { contadorTiquetes = count; }
 
     // Obtiene las referencias a las listas de tiquetes y ventanillas
     PriorityQueue<Tiquete>& getColaTiquetes() const { return *colaTiquetes; }

@@ -139,7 +139,7 @@ Area selectionArea(ArrayList<Area>& areas) {
 }
 
 //Sub-menú de elegir servicios
-Servicio selectionService(List<Servicio>* serviceList) {
+Servicio selectionService(List<Servicio>* serviceList, bool incCounter) {
 	int menuSize = serviceList->getSize();
 	int currentSelection = 0;
 
@@ -157,10 +157,12 @@ Servicio selectionService(List<Servicio>* serviceList) {
 			// Seleccionar el servicio
 			serviceList->goToPos(currentSelection);
 
-			// Se modifica el contador de tiquetes del servicio
-			Servicio service = serviceList->remove();
-			service.incrementarContadorTiquetes();
-			serviceList->insert(service);
+			if (incCounter) {
+				// Se modifica el contador de tiquetes del servicio
+				Servicio service = serviceList->remove();
+				service.incrementarContadorTiquetes();
+				serviceList->insert(service);
+			}
 
 			Servicio servicioSeleccionado = serviceList->getElement();
 			return servicioSeleccionado; // Devuelve el servicio seleccionado
@@ -271,7 +273,7 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 					cout << "* * * Reordenar Servicios * * *" << endl
 						 << "Escoja el servicio que desea cambiar a otra posicion:" << endl;
 
-					Servicio selectedService = selectionService(serviceList);
+					Servicio selectedService = selectionService(serviceList, false);
 					int indexService = serviceList->indexOf(selectedService, 0);
 
 					int newIndex;
@@ -670,6 +672,8 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList, ArrayList<Area>& areas) 
 						}
 						if (confirm == "n" || confirm == "N") {
 							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << endl << "* Accion abandonada *" << endl;
+							system("pause");
 							break;
 						}
 						else {
@@ -782,6 +786,8 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 						}
 						if (confirm == "n" || confirm == "N") {
 							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							cout << endl << "* Accion abandonada *" << endl;
+							system("pause");
 							break;
 						}
 						else {
@@ -854,7 +860,7 @@ bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* service
 					prioridadUser = arrayListUsers->getElement().prioridadUser;
 
 					// Selección de servicio
-					Servicio servicioSeleccionado = selectionService(serviceList);
+					Servicio servicioSeleccionado = selectionService(serviceList, true);
 
 					string stringNumGlobal = std::to_string(numGlobal);
 					numGlobal++;
@@ -868,6 +874,7 @@ bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* service
 						Area currentArea = areas.getElement();
 						if (servicioSeleccionado.getAreaCode() == currentArea.getCodigo()) {
 							currentArea.getColaTiquetes().insert(ticket, ticket.getFinalPriority());
+							currentArea.incrementarContadorTiquetes();
 							areas.setElement(currentArea);
 						}
 						areas.next();
@@ -1041,7 +1048,79 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList
 				}
 				// Consulta de ciertas estadísticas
 				if (listMenu->getElement() == "Estadísticas del sistema") {
-					cout << "estoy aqui, wooo";
+					cout << "* Estadisticas del Sistema *" << endl << endl;
+					cout << "- - Información de Áreas - -" << endl << endl;
+					if (areas.getSize() != 0) {
+						areas.goToStart();
+						for (int i = 0; i < areas.getSize(); i++) {
+							int tiempoEsperaTotal = 0;
+							Area currentA = areas.getElement();
+							// Se imprimen datos del área actual
+							cout << "Area: " << currentA.getTituloArea() << endl << endl;
+
+							currentA.getListaVentanillas().goToStart();
+							for (int i = 0; i < currentA.getListaVentanillas().getSize(); i++) {
+								Ventanilla currentV = currentA.getListaVentanillas().getElement();
+								tiempoEsperaTotal = tiempoEsperaTotal + currentV.getTiempoTotalEspera();
+								cout << "	Ventanilla " << currentV.getCode() << ": " << endl;
+								cout << "		Tiquetes atendidos: " << currentV.getContadorTiquetes() << endl;
+								currentA.getListaVentanillas().next();
+							}
+							if (currentA.getContadorTiquetes() == 0) {
+								cout << endl << "	Tiempo promedio de espera: 0 segundos" << endl;
+							}
+							else {
+								double promedio = static_cast<double>(tiempoEsperaTotal) / currentA.getContadorTiquetes();
+								cout << endl << "	Tiempo promedio de espera: " << promedio << " segundos" << endl;
+							}
+							cout << endl << "	Tiquetes dispensados: " << currentA.getContadorTiquetes() << endl << endl;
+							areas.next();
+						}
+					}
+					else {
+						cout << "* No hay Áreas Disponibles *" << endl;
+					}
+					cout << endl << "- - Información de Servicios - -" << endl << endl;
+					if (serviceList->getSize() != 0) {
+						serviceList->goToStart();
+						for (int i = 0; i < serviceList->getSize(); i++) {
+							Servicio currentS = serviceList->getElement();
+							cout << "Servicio: " << currentS.getDescripcion() << endl;
+							cout << endl << "	Tiquetes solicitados: " << currentS.getContadorTiquetes() << endl << endl;
+							serviceList->next();
+						}
+					}
+					else {
+						cout << "* No hay Servicios Disponibles *" << endl;
+					}
+					cout << endl << "- - Información de Usuarios - -" << endl << endl;
+					if (userList->getSize() != 0) {
+						List<Usuario>* listUsers =
+							new ArrayList<Usuario>(userList->getSize());
+						// Se crea una lista de usuarios para que se impriman en orden
+						while (!userList->isEmpty()) {
+							listUsers->append(userList->removeMin());
+						}
+						listUsers->goToStart();
+						for (int i = 0; i < listUsers->getSize(); i++) {
+							Usuario currentU = listUsers->getElement();
+							cout << "Usuario: " << currentU.getName() << endl;
+							cout << endl << "	Tiquetes emitidos: " << currentU.getTicketCounter() << endl;
+							listUsers->next();
+						}
+
+						// La lista se vuelve a pasar a la cola
+						listUsers->goToStart();
+						while (!listUsers->isEmpty()) {
+							Usuario user = listUsers->remove();
+							userList->insert(user, user.getPriority());
+						}
+						cout << endl;
+						delete listUsers;
+					}
+					else {
+						cout << "* No hay Usuarios Disponibles *" << endl << endl;
+					}
 				}
 				if (currentSelection == menuSize - 1) {
 					delete listMenu;
@@ -1056,10 +1135,6 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList
 		}
 	}
 }
-/*try {
-} catch (const runtime_error& errorDetectado) {
-	std::cerr << "Error: " << errorDetectado.what() << endl;
-}*/
 
 int main() {
 	std::locale::global(std::locale("es_ES.UTF-8"));  // Configurar la localización a español
@@ -1071,13 +1146,6 @@ int main() {
 	ArrayList<Area>& listaAreas = areaArrayList;
 
 	menuPrincipal(colaUsuarios, listaServicios, listaAreas);
-
-	cout << "Cola de Usuarios:" << endl;
-	colaUsuarios->print();
-	cout << "Lista de Servicios:" << endl;
-	listaServicios->print();
-	cout << "Lista de Areas:" << endl;
-	listaAreas.print();
 	
 	// No olvides liberar la memoria
 	delete colaUsuarios;

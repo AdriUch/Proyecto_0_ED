@@ -34,6 +34,8 @@ private:
     time_t segundos;
     tm horaAtencion;
     time_t horaEsperaTiquete;
+    time_t tiempoTotalEspera;
+    int contadorTiquetes;
 
 public:
     Ventanilla() : codigoVentanilla(""), tiqueteActual() {
@@ -41,6 +43,8 @@ public:
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
         segundos = 0;
         horaEsperaTiquete = 0;
+        contadorTiquetes = 0;
+        tiempoTotalEspera = 0;
     }
 
     Ventanilla(const string& areaCode, int numeroVentanilla) 
@@ -49,17 +53,30 @@ public:
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
         segundos = 0;
         horaEsperaTiquete = 0;
+        contadorTiquetes = 0;
+        tiempoTotalEspera = 0;
     }
 
     bool operator ==(const Ventanilla& other) {
         return this->codigoVentanilla == other.codigoVentanilla
             && this->tiqueteActual == other.tiqueteActual
             && this->segundos == other.segundos
-            && this->horaEsperaTiquete == other.horaEsperaTiquete;
+            && this->horaEsperaTiquete == other.horaEsperaTiquete
+            && this->contadorTiquetes == other.contadorTiquetes
+            && this->tiempoTotalEspera == other.tiempoTotalEspera;
     }
     
     string getCode() { return codigoVentanilla; }
     Tiquete getTicket() { return tiqueteActual; }
+    int getContadorTiquetes() const { return contadorTiquetes; }
+    time_t getTiempoTotalEspera() { return tiempoTotalEspera; }
+
+    void incrementarContadorTiquetes() { contadorTiquetes++; }
+    void incrementarTiempoTotalEspera() {
+        tiempoTotalEspera = tiempoTotalEspera + horaEsperaTiquete;
+    }
+    void setContadorTiquetes(int count) { contadorTiquetes = count; }
+    void setTiempoTotalEspera(int count) { tiempoTotalEspera = count; }
     
     // atender un tiquete
     void atenderTiquete(PriorityQueue<Tiquete>& colaPrioridad) {
@@ -99,17 +116,10 @@ public:
         this->tiqueteActual = Tiquete();
     }
 
-    tm calcularEspera(time_t horaTiquete) {
+    time_t calcularEspera(time_t horaTiquete) {
         horaEsperaTiquete = segundos - horaTiquete;
-        tm utcTime;
-        gmtime_s(&utcTime, &horaEsperaTiquete);
 
-        return utcTime;
-
-        //cout << "Hours: " << utcTime.tm_hour << ", Minutes: " << utcTime.tm_min
-          //  << ", Seconds: " << utcTime.tm_sec << "\n";
-
-
+        return horaEsperaTiquete;
     }
 
     // Imprimir la ventanilla
