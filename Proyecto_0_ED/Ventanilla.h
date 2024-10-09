@@ -70,6 +70,7 @@ public:
     Tiquete getTicket() { return tiqueteActual; }
     int getContadorTiquetes() const { return contadorTiquetes; }
     time_t getTiempoTotalEspera() { return tiempoTotalEspera; }
+    time_t getTimeVentanilla() { return segundos; }
 
     void incrementarContadorTiquetes() { contadorTiquetes++; }
     void incrementarTiempoTotalEspera() {
@@ -106,8 +107,7 @@ public:
         this->horaAtencion = gmtMinus6Time; // Guardar hora de atención ajustada
 
         // Tiquete atendido
-        std::cout << "Tiquete atendido en la " << this->codigoVentanilla << ":\n";
-        std::cout << tiqueteAtendido << std::endl;
+        std::cout << "Tiquete atendido en la ventanilla: " << this->codigoVentanilla << endl;
         std::cout << "Hora de atención: " << horaAtencion.tm_hour << ":" 
                   << (horaAtencion.tm_min < 10 ? "0" : "") << horaAtencion.tm_min << ":" 
                   << (horaAtencion.tm_sec < 10 ? "0" : "") << horaAtencion.tm_sec << "\n";
@@ -117,10 +117,8 @@ public:
         this->tiqueteActual = Tiquete();
     }
 
-    time_t calcularEspera(time_t horaTiquete) {
+    void calcularEspera(time_t horaTiquete) {
         horaEsperaTiquete = segundos - horaTiquete;
-
-        return horaEsperaTiquete;
     }
 
     // Imprimir la ventanilla

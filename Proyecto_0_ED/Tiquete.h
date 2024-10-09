@@ -72,6 +72,7 @@ public:
 		this->prioridadUser = other.prioridadUser;
 		this->prioridadServicio = other.prioridadServicio;
 		this->prioridadFinal = other.prioridadFinal;
+		this->segundos = other.segundos;
 	}
 
 	string getCode() {
