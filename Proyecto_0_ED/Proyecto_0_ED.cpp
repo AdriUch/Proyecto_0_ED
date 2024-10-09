@@ -169,7 +169,7 @@ Servicio selectionService(List<Servicio>* serviceList, bool incCounter) {
 		}
 	}
 }
-
+// Agregado por Britany y las funciones reordenar y eliminar modificadas por Carmem
 bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 	// Opciones del menú
 	const int menuSize = 4;
