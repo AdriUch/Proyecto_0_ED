@@ -2,15 +2,15 @@
             Archivo: Clase Área
             Hecho por: Adrián Ugalde
 
-            Descripción general:Clase que contiene los atributos necesarios
-			para crear un objeto llamado Area para después guardarlo
-			en una lista. Se detalla el funcionamiento de
-			la asignación, las comparaciones entre objetos y la impresión.
+            Descripción general: Clase que contiene los atributos necesarios
+            para crear un objeto llamado Área para después guardarlo
+            en una lista. Se detalla el funcionamiento de
+            la asignación, las comparaciones entre objetos y la impresión.
 
             Modificación hecha por: Carmen Hidalgo Paz
 
-            Descripción: Se detalla el funcionamiento de las comparaciones
-            entre objetos y de la impresión de los datos.
+            Descripción: Se agrega un atributo contador de tiquetes y métodos
+            que retornan y modifican este atributo
 
 */
 

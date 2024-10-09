@@ -34,33 +34,33 @@ public:
 	}
 	bool operator ==(const Usuario& other) {
 		return this->tipoUser == other.tipoUser &&
-				this->prioridadUser == other.prioridadUser &&
-				this->contadorTiquetes == other.contadorTiquetes;
+			this->prioridadUser == other.prioridadUser &&
+			this->contadorTiquetes == other.contadorTiquetes;
 	}
 	bool operator !=(const Usuario& other) {
 		return this->tipoUser != other.tipoUser &&
-				this->prioridadUser != other.prioridadUser &&
-				this->contadorTiquetes != other.contadorTiquetes;
+			this->prioridadUser != other.prioridadUser &&
+			this->contadorTiquetes != other.contadorTiquetes;
 	}
 	bool operator <(const Usuario& other) {
 		return this->tipoUser < other.tipoUser &&
-				this->prioridadUser < other.prioridadUser &&
-				this->contadorTiquetes < other.contadorTiquetes;
+			this->prioridadUser < other.prioridadUser &&
+			this->contadorTiquetes < other.contadorTiquetes;
 	}
 	bool operator <=(const Usuario& other) {
 		return this->tipoUser <= other.tipoUser &&
-				this->prioridadUser <= other.prioridadUser &&
-				this->contadorTiquetes <= other.contadorTiquetes;
+			this->prioridadUser <= other.prioridadUser &&
+			this->contadorTiquetes <= other.contadorTiquetes;
 	}
 	bool operator >(const Usuario& other) {
 		return this->tipoUser > other.tipoUser &&
-				this->prioridadUser > other.prioridadUser &&
-				this->contadorTiquetes > other.contadorTiquetes;
+			this->prioridadUser > other.prioridadUser &&
+			this->contadorTiquetes > other.contadorTiquetes;
 	}
 	bool operator >=(const Usuario& other) {
 		return this->tipoUser >= other.tipoUser &&
-				this->prioridadUser >= other.prioridadUser &&
-				this->contadorTiquetes >= other.contadorTiquetes;
+			this->prioridadUser >= other.prioridadUser &&
+			this->contadorTiquetes >= other.contadorTiquetes;
 	}
 
 	string getName() {

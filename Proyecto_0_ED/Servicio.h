@@ -1,14 +1,17 @@
 /*
-    Archivo: Clase Servicio
-    Hecho por: Britany Romero 
-    Descripción general: Es basicamente un servicio que se ofrece a los clientes. 
-    Cada servicio tiene una descripción, un nivel de prioridad, un código de área y un contador que rastrea cuántos tiquetes se han atendido. 
-    Esta clase nos deja gestionar y comparar diferentes servicios.
+            Archivo: Clase Servicio
+            Hecho por: Britany Romero
 
-    Modificación hecha por: Carmen Hidalgo Paz
-    Descripción: Se detalla el funcionamiento de las comparaciones
-    entre objetos. Se agregó el atributo contadorTiquetes y se actualizaron
-    los métodos para que se tomara en cuenta.
+            Descripción general: Es basicamente un servicio que se ofrece a los clientes.
+            Cada servicio tiene una descripción, un nivel de prioridad,
+            un código de área y un contador que rastrea cuántos tiquetes se han atendido.
+            Esta clase nos deja gestionar y comparar diferentes servicios.
+
+            Modificación hecha por: Carmen Hidalgo Paz
+
+            Descripción: Se detalla el funcionamiento de las comparaciones
+            entre objetos. Se agrega un atributo contador de tiquetes y métodos
+            que retornan y modifican este atributo
 */
 
 #pragma once
@@ -33,15 +36,15 @@ public:
     Servicio(const string& descripcion, int prioridadServicio, const string& areaCode)
         : descripcion(descripcion), prioridadServicio(prioridadServicio), areaCode(areaCode), contadorTiquetes(0) {}
 
- 
+
     bool operator ==(const Servicio& other) const {
-        return this->descripcion == other.descripcion && 
-               this->prioridadServicio == other.prioridadServicio &&
-               this->areaCode == other.areaCode && 
-               this->contadorTiquetes == other.contadorTiquetes;
+        return this->descripcion == other.descripcion &&
+            this->prioridadServicio == other.prioridadServicio &&
+            this->areaCode == other.areaCode &&
+            this->contadorTiquetes == other.contadorTiquetes;
     }
 
-   
+
     bool operator <(const Servicio& other) const {
         return this->prioridadServicio < other.prioridadServicio; // Comparación por prioridad
     }
@@ -59,7 +62,7 @@ public:
     void incrementarContadorTiquetes() { contadorTiquetes++; }
     void setContadorTiquetes(int count) { contadorTiquetes = count; }
 
-    
+
     friend ostream& operator <<(ostream& os, const Servicio& servicioInfo) {
         os << servicioInfo.descripcion;
         return os;

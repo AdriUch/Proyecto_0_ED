@@ -11,6 +11,7 @@
 
 			Descripción: Se agregó el método privado expand() para expandir el
 			arreglo cuando se desea insertar un elemento y el arreglo está lleno.
+			Además se agregó un constructor de copia.
 */
 
 
@@ -62,7 +63,7 @@ private:
 		elements[pos2] = temp;
 	}
 	int minChild(int pos) {
-		if (rightChild(pos) >= size || 
+		if (rightChild(pos) >= size ||
 			elements[leftChild(pos)] < elements[rightChild(pos)])
 			return leftChild(pos);
 		return rightChild(pos);
@@ -122,12 +123,12 @@ public:
 		if (size == 0)
 			throw runtime_error("Heap is empty.");
 		return elements[0];
-	}	
+	}
 	E removeFirst() {
 		if (size == 0)
 			throw runtime_error("Heap is empty.");
 		return remove(0);
-	}	
+	}
 	E remove(int pos) {
 		if (pos < 0 || pos >= size)
 			throw runtime_error("Index out of bounds.");

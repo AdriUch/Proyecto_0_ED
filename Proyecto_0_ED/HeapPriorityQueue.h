@@ -5,6 +5,10 @@
 			Descripción general: Hereda de la clase PriorityQueue. Se implementan
 			los métodos para el manejo de los elementos, que en este caso son los
 			objetos KVPair, dentro de la cola de prioridad.
+
+			Modificación hecha por: Carmen Hidalgo Paz
+
+			Descripción: Se le agregó un constructor de copia.
 */
 
 

@@ -12,6 +12,12 @@
 			Asimismo, se implementaron las funciones indexOf() y contains() para
 			encontrar la posición de un elemento en la lista y si el elemento está
 			en la lista, respectivamente.
+
+			Modificación hecha por: Adrián Ugalde Chaves
+
+			Descripción: Se crearon los métodos getArray que devuelve un puntero hacia
+			el arreglo de datos y getTheElement que recibe una posición y retorna
+			el elemento en esta. Asimismo se incluyó un constructor de copia.
 */
 
 

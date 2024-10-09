@@ -1,9 +1,10 @@
 /*
             Archivo: Clase Ventanilla
-            Hecho por:Britany Romero 
+            Hecho por:Britany Romero
 
-            Descripción general:Es un punto ( clase ) donde se atienden los clientes. 
-            Cada ventanilla tiene un código único y puede atender a clientes mediante un sistema de tiquetes. 
+            Descripción general:Es un punto ( clase ) donde se atienden los clientes.
+            Cada ventanilla tiene un código único y puede atender
+            a clientes mediante un sistema de tiquetes.
             Además, registra la hora en que se brinda la atención.
 
             Modificación hecha por: Carmen Hidalgo Paz
@@ -29,8 +30,8 @@ using std::runtime_error;
 
 class Ventanilla {
 private:
-    string codigoVentanilla;     
-    Tiquete tiqueteActual; 
+    string codigoVentanilla;
+    Tiquete tiqueteActual;
     time_t segundos;
     tm horaAtencion;
     time_t horaEsperaTiquete;
@@ -47,9 +48,9 @@ public:
         tiempoTotalEspera = 0;
     }
 
-    Ventanilla(const string& areaCode, int numeroVentanilla) 
-        : codigoVentanilla(areaCode + std::to_string(numeroVentanilla)), 
-          tiqueteActual() {
+    Ventanilla(const string& areaCode, int numeroVentanilla)
+        : codigoVentanilla(areaCode + std::to_string(numeroVentanilla)),
+        tiqueteActual() {
         std::memset(&horaAtencion, 0, sizeof(horaAtencion));
         segundos = 0;
         horaEsperaTiquete = 0;
@@ -65,7 +66,7 @@ public:
             && this->contadorTiquetes == other.contadorTiquetes
             && this->tiempoTotalEspera == other.tiempoTotalEspera;
     }
-    
+
     string getCode() { return codigoVentanilla; }
     Tiquete getTicket() { return tiqueteActual; }
     int getContadorTiquetes() const { return contadorTiquetes; }
@@ -79,7 +80,7 @@ public:
     void setContadorTiquetes(int count) { contadorTiquetes = count; }
     void setTiempoTiquete(int count) { horaEsperaTiquete = count; }
     void setTiempoTotalEspera(int count) { tiempoTotalEspera = count; }
-    
+
     // atender un tiquete
     void atenderTiquete(PriorityQueue<Tiquete>& colaPrioridad) {
         if (colaPrioridad.isEmpty()) {
@@ -90,7 +91,7 @@ public:
         Tiquete tiqueteAtendido = colaPrioridad.removeMin();
         this->tiqueteActual = tiqueteAtendido;
 
-   
+
         time_t tiempoActual = time(0);
         tm utcTime;
         gmtime_s(&utcTime, &tiempoActual);
@@ -108,9 +109,9 @@ public:
 
         // Tiquete atendido
         std::cout << "Tiquete atendido en la ventanilla: " << this->codigoVentanilla << endl;
-        std::cout << "Hora de atención: " << horaAtencion.tm_hour << ":" 
-                  << (horaAtencion.tm_min < 10 ? "0" : "") << horaAtencion.tm_min << ":" 
-                  << (horaAtencion.tm_sec < 10 ? "0" : "") << horaAtencion.tm_sec << "\n";
+        std::cout << "Hora de atención: " << horaAtencion.tm_hour << ":"
+            << (horaAtencion.tm_min < 10 ? "0" : "") << horaAtencion.tm_min << ":"
+            << (horaAtencion.tm_sec < 10 ? "0" : "") << horaAtencion.tm_sec << "\n";
     }
 
     void borrarTiquete() {
@@ -123,8 +124,8 @@ public:
 
     // Imprimir la ventanilla
     friend ostream& operator<<(ostream& os, const Ventanilla& ventanillaInfo) {
-        os << "Ventanilla: " << ventanillaInfo.codigoVentanilla 
-           << " | Tiquete Actual: " << endl << ventanillaInfo.tiqueteActual;
+        os << "Ventanilla: " << ventanillaInfo.codigoVentanilla
+            << " | Tiquete Actual: " << endl << ventanillaInfo.tiqueteActual;
         return os;
     }
 };

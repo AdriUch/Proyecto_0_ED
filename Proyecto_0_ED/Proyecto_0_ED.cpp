@@ -1,6 +1,6 @@
 /*
 			Trabajo: Proyecto 0 - Sistema de administración de colas
-			Hecho por: Carmen Hidalgo Paz, Britany y Adrián
+			Hecho por: Carmen Hidalgo Paz, Britany Romero Hernández y Adrián Ugalde Chaves
 			Fecha de Entrega: 8 de octubre del 2024
 			Clase: Estructuras de Datos
 
@@ -194,7 +194,7 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 				system("cls");
 				listMenu->goToPos(currentSelection);
 				if (listMenu->getElement() == "Agregar") {
-					
+
 					// Si no hay áreas creadas, tirar error
 					if (areas.getSize() == 0) {
 						throw std::runtime_error("No hay áreas disponibles para seleccionar.");
@@ -241,8 +241,8 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 					string confirm;
 					while (true) {
 						cout << endl << "¿Desea borrar este servicio?" << endl
-							 << "Tome en cuenta que también se borrarán todos los tiquetes." << endl
-							 << "Escriba S/s si desea continuar y N/n si no: ";
+							<< "Tome en cuenta que también se borrarán todos los tiquetes." << endl
+							<< "Escriba S/s si desea continuar y N/n si no: ";
 						cin >> confirm;
 
 						if (confirm == "s" || confirm == "S") {
@@ -271,7 +271,7 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 				}
 				if (listMenu->getElement() == "Reordenar") {
 					cout << "* * * Reordenar Servicios * * *" << endl
-						 << "Escoja el servicio que desea cambiar a otra posición:" << endl;
+						<< "Escoja el servicio que desea cambiar a otra posición:" << endl;
 
 					Servicio selectedService = selectionService(serviceList, false);
 					int indexService = serviceList->indexOf(selectedService, 0);
@@ -322,11 +322,13 @@ bool menuServicios(List<Servicio>* serviceList, ArrayList<Area>& areas) {
 		return false;
 	}
 }
+// - - FIN DE MENÚ ADMIN: SERVICIOS - -
+
 
 // - - MENÚ ADMIN: ÁREAS - -
 
 void serviceElimination(ArrayList<Area>& areas, int currentAreaIndex,
-						List<Servicio>* serviceList) {
+	List<Servicio>* serviceList) {
 	serviceList->goToStart();
 	areas.goToPos(currentAreaIndex);
 	Area selectedArea = areas.getElement();
@@ -370,7 +372,7 @@ bool areaElimination(ArrayList<Area>& areas, int currentSelection) {
 
 // Sub-menú de Admin. Realiza las operaciones de las áreas
 bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
-	
+
 	int totalArea = areas.getSize();
 	const int menuSize = 4;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -419,7 +421,7 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 					Area nuevaArea(titulo, codigo, cantidadVentanillas);
 					// Crear las ventanillas
 					for (int i = 0; i < cantidadVentanillas; i++) {
-						Ventanilla newVentanilla(codigo, i+1);
+						Ventanilla newVentanilla(codigo, i + 1);
 						nuevaArea.getListaVentanillas().append(newVentanilla);
 					}
 					areas.append(nuevaArea);
@@ -556,6 +558,10 @@ bool menuAreas(ArrayList<Area>& areas, List<Servicio>* serviceList) {
 	}
 }
 
+// - - FIN DE MENÚ ADMIN: ÁREAS - -
+
+
+
 // - - MENÚ ADMIN: USUARIOS - -
 
 bool userElimination(PriorityQueue<Usuario>* userList) {
@@ -564,38 +570,38 @@ bool userElimination(PriorityQueue<Usuario>* userList) {
 	List<Usuario>* arrayListUsers = new ArrayList<Usuario>(userList->getSize());
 	int prioridadUser = 0;
 
-		while (!userList->isEmpty()) {
-			arrayListUsers->append(userList->removeMin());
+	while (!userList->isEmpty()) {
+		arrayListUsers->append(userList->removeMin());
+	}
+	bool continueCycle = true;
+	while (continueCycle) {
+		system("cls");
+		cout << "* * * Selección de Borrado de Usuario * * *" << endl;
+
+		// Mostrar el menú de usuarios
+		mostrarMenu(currentSelection, arrayListUsers, menuSize);
+
+		int key = _getch();
+		currentSelection = keysMenu(key, currentSelection, menuSize);
+
+		if (key == 13) { // Enter
+
+			// Seleccionar el usuario
+			arrayListUsers->goToPos(currentSelection);
+
+			// Se borra el usuario
+			arrayListUsers->remove();
+			continueCycle = false;
 		}
-		bool continueCycle = true;
-		while (continueCycle) {
-			system("cls");
-			cout << "* * * Selección de Borrado de Usuario * * *" << endl;
+	}
+	arrayListUsers->goToStart();
+	while (!arrayListUsers->isEmpty()) {
+		Usuario user = arrayListUsers->remove();
+		userList->insert(user, user.getPriority());
+	}
 
-			// Mostrar el menú de usuarios
-			mostrarMenu(currentSelection, arrayListUsers, menuSize);
-
-			int key = _getch();
-			currentSelection = keysMenu(key, currentSelection, menuSize);
-
-			if (key == 13) { // Enter
-				
-				// Seleccionar el usuario
-				arrayListUsers->goToPos(currentSelection);
-
-				// Se borra el usuario
-				arrayListUsers->remove();
-				continueCycle = false;
-			}
-		}
-		arrayListUsers->goToStart();
-		while (!arrayListUsers->isEmpty()) {
-			Usuario user = arrayListUsers->remove();
-			userList->insert(user, user.getPriority());
-		}
-
-		delete arrayListUsers;
-		return false;
+	delete arrayListUsers;
+	return false;
 }
 
 // Sub-menú de Admin. Realiza las operaciones de los usuarios.
@@ -655,7 +661,7 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList, ArrayList<Area>& areas) 
 						continue;
 					}
 					string confirm;
-					
+
 					while (true) {
 						cout << "¿Desea borrar un tipo de usuario?" << endl
 							<< "Tome en cuenta que también se borrarán todos los tiquetes creados"
@@ -703,10 +709,14 @@ bool menuTipoUsuarios(PriorityQueue<Usuario>* userList, ArrayList<Area>& areas) 
 	}
 }
 
+// - - FIN DE MENÚ ADMIN: USUARIOS - -
+
+
+
 // MENÚ ADMINISTRACIÓN. Sub-menú del principal. Se encarga
 // de dar opciones para listas o colas de usuarios, áreas y servicios
 bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
-				ArrayList<Area>& areas) {
+	ArrayList<Area>& areas) {
 	// Opciones del menú
 	const int menuSize = 5;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -716,7 +726,7 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 	listMenu->append("Limpiar Colas y Estadísticas");
 	listMenu->append("Regresar");
 	int currentSelection = 0;
-	
+
 	try {
 		// Manejo de las teclas del menú
 		while (true) {
@@ -754,15 +764,14 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 				if (listMenu->getElement() == "Limpiar Colas y Estadísticas") {
 					string confirm;
 					while (true) {
+						if (areas.isEmpty()) {
+							throw runtime_error("No hay Áreas disponibles");
+						}
 						cout << "¿Desea limpiar las colas y estadísticas?" << endl
 							<< "Tome en cuenta que se borrarán todos los tiquetes creados y los atendidos."
 							<< endl << "Además, se van eliminar todos los datos guardados en las estadísticas."
 							<< endl << "Escriba S/s si desea continuar y N/n si no: ";
 						cin >> confirm;
-
-						if (areas.isEmpty()) {
-							throw runtime_error("No hay Áreas disponibles");
-						}
 						if (confirm == "s" || confirm == "S") {
 							cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							// Se borran las colas de tiquetes
@@ -772,6 +781,7 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 							while (!areas.atEnd()) {
 								Area currentArea = areas.getElement();
 								if (!currentArea.getListaVentanillas().isEmpty()) {
+									currentArea.getListaVentanillas().goToStart();
 									while (!currentArea.getListaVentanillas().atEnd()) {
 										Ventanilla currentVentanilla = currentArea.getListaVentanillas().getElement();
 										currentVentanilla.borrarTiquete();
@@ -793,27 +803,29 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 								serviceList->setElement(currentS);
 								serviceList->next();
 							}
-							List<Usuario>* listUsers =
-								new ArrayList<Usuario>(userList->getSize());
-							// Se crea una lista de usuarios para que se pueda acceder a todos
-							while (!userList->isEmpty()) {
-								listUsers->append(userList->removeMin());
+							if (userList->getSize() != 0) {
+								List<Usuario>* listUsers =
+									new ArrayList<Usuario>(userList->getSize());
+								// Se crea una lista de usuarios para que se pueda acceder a todos
+								while (!userList->isEmpty()) {
+									listUsers->append(userList->removeMin());
+								}
+								listUsers->goToStart();
+								for (int i = 0; i < listUsers->getSize(); i++) {
+									Usuario currentU = listUsers->getElement();
+									currentU.resetTicketCounter(0);
+									listUsers->setElement(currentU);
+									listUsers->next();
+								}
+								// La lista se vuelve a pasar a la cola
+								listUsers->goToStart();
+								while (!listUsers->isEmpty()) {
+									Usuario user = listUsers->remove();
+									userList->insert(user, user.getPriority());
+								}
+								cout << endl;
+								delete listUsers;
 							}
-							listUsers->goToStart();
-							for (int i = 0; i < listUsers->getSize(); i++) {
-								Usuario currentU = listUsers->getElement();
-								currentU.resetTicketCounter(0);
-								listUsers->setElement(currentU);
-								listUsers->next();
-							}
-							// La lista se vuelve a pasar a la cola
-							listUsers->goToStart();
-							while (!listUsers->isEmpty()) {
-								Usuario user = listUsers->remove();
-								userList->insert(user, user.getPriority());
-							}
-							cout << endl;
-							delete listUsers;
 
 							cout << endl << "* Acción realizada con éxito *" << endl;
 							break;
@@ -852,7 +864,7 @@ bool menuAdmin(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 
 // Sub-menú de Tiquete. Menú de selección de Usuario y creación de Tiquete
 bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
-						ArrayList<Area>& areas) {
+	ArrayList<Area>& areas) {
 	try {
 		// Si las listas de usuario y servicios están vacías
 		if (userList->getSize() == 0) {
@@ -878,7 +890,7 @@ bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* service
 
 			int key = _getch();
 			currentSelection = keysMenu(key, currentSelection, menuSize);
-			
+
 			if (key == 13) { // Enter
 				system("cls");
 
@@ -900,9 +912,9 @@ bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* service
 					numGlobal++;
 
 					// Creación de tiquete
-					Tiquete ticket(prioridadUser, servicioSeleccionado.getPrioridadServicio(), 
-								servicioSeleccionado.getAreaCode(), stringNumGlobal);
-					
+					Tiquete ticket(prioridadUser, servicioSeleccionado.getPrioridadServicio(),
+						servicioSeleccionado.getAreaCode(), stringNumGlobal);
+
 					areas.goToStart();
 					while (!areas.atEnd()) {
 						Area currentArea = areas.getElement();
@@ -947,7 +959,7 @@ bool selectionElements(PriorityQueue<Usuario>* userList, List<Servicio>* service
 
 // MENÚ TIQUETES. Sub-menú del principal. Para pedir la creación de un tiquete.
 bool menuTiquetes(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
-					ArrayList<Area>& areas) {
+	ArrayList<Area>& areas) {
 	const int menuSize = 2;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
 	listMenu->append("Creación de Tiquete");
@@ -983,6 +995,8 @@ bool menuTiquetes(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
 
 // - - - - - FIN MENÚS TIQUETES - - - - -
 
+
+// - - - - -  MENÚ ATENDER - - - - -
 
 // MENÚ ATENDER. Sub-menú del principal. Para pedir que se atienda un tiquete.
 bool atenderTiquete(ArrayList<Area>& areas) {
@@ -1054,6 +1068,8 @@ bool atenderTiquete(ArrayList<Area>& areas) {
 	return false;
 }
 
+// - - - - - FIN MENÚ ATENDER - - - - -
+
 // - - - - - MENÚ PRINCIPAL - - - - -
 
 void configurarConsola() {
@@ -1066,7 +1082,7 @@ void configurarConsola() {
 // Contiene sub-menús: Estado de Colas, Tiquetes, Atender,
 // Administración y Estadísticas del sistema
 void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList,
-					ArrayList<Area>& areas) {
+	ArrayList<Area>& areas) {
 	configurarConsola();
 	const int menuSize = 6;
 	List<string>* listMenu = new ArrayList<string>(menuSize);
@@ -1139,7 +1155,7 @@ void menuPrincipal(PriorityQueue<Usuario>* userList, List<Servicio>* serviceList
 							Ventanilla currentV = currentA.getListaVentanillas().getElement();
 							// Se imprimen datos de la ventanilla actual
 							cout << "		Ventanilla: " << currentV.getCode() << endl;
-							cout << "			Último Tiquete Atendido: " 
+							cout << "			Último Tiquete Atendido: "
 								<< currentV.getTicket().getCode() << endl;
 							currentA.getListaVentanillas().next();
 						}
@@ -1266,14 +1282,14 @@ int main() {
 	setlocale(LC_ALL, "");
 	// Se crean todas las listas y colas que se van a utilizar
 	PriorityQueue<Usuario>* colaUsuarios = new HeapPriorityQueue<Usuario>();
-    List<Servicio>* listaServicios = new ArrayList<Servicio>();
+	List<Servicio>* listaServicios = new ArrayList<Servicio>();
 	ArrayList<Area> areaArrayList;
 	ArrayList<Area>& listaAreas = areaArrayList;
 
 	menuPrincipal(colaUsuarios, listaServicios, listaAreas);
-	
+
 	// No olvides liberar la memoria
 	delete colaUsuarios;
-    delete listaServicios;
-    return 0;
+	delete listaServicios;
+	return 0;
 }
